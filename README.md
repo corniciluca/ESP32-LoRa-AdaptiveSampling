@@ -41,10 +41,14 @@ In the code the maximum theoretical frequency is used to determine the optimal o
 Choosing between higher or lower sampling frequencies involves critical engineering trade-offs:
 **Trade offs**
 - **Higher Sampling Rates** :
+  
      - **Advantages**: Better signal reconstruction, reduced ISI.
+       
      - **Drawbacks**: Increased CPU load, memory usage, and power consumption.
 - **Lower Sampling Rates** :
+  
      - **Advantages**: Resource-efficient.
+       
      - **Drawbacks**: Risk of aliasing, ISI, and loss of high-frequency details.
 
 To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained levegering, the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2 * $\f_max$, eventhough a common engineering practice is to pick $\f_sample$ = 2.5 * $\f_max$ for safety margins.
