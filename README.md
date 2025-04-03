@@ -147,7 +147,22 @@ The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device aut
 
 **Details of implementation**
 
+In this project we have used **LoRaWAN Class A** which is the default and most **energy-efficient** LoRaWAN device class, optimized for battery-powered IoT devices. This class has an extremely **low power** consumption due to the fact between the trasmitting of uplink messages it will **sleep**. It's important to notice that once the esp32 wakes up from the sleep state, it will be **restared** and the values stored in the normal variables will be lost. To prevent this from appening, it's possible to save some data in **RTC registers**, registers that wont be wiped once the esp32 wakes up for the sleep state.
+Using the key word **RTC_DATA_ATTR** will create a variable inside the **RTC** registers
 
+* Example:
+  
+  ```
+     /* Persistent State --------------------------------------------------------- */
+     // RTC-retained variables (survive deep sleep)
+     RTC_DATA_ATTR int sample_i = 0;        // Sample index counter
+     RTC_DATA_ATTR int freq = INIT_SAMPLE_RATE; // Current sampling frequency
+     RTC_DATA_ATTR bool initialized = false;// Initialization flag
+     RTC_DATA_ATTR int w_pos = 0;           // Circular buffer position
+     RTC_DATA_ATTR int w_count = 0;         // Valid samples counter
+     RTC_DATA_ATTR float sampleReadings[WINDOW_SIZE] = {0}; // Sample buffer
+     
+  ```
 
 **Code Reference**: [transmission_lora.ino](/transmission/transmission_mqtt/transmission_lora.ino)
 
@@ -157,14 +172,14 @@ The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device aut
 
 ![RTT_val](https://github.com/user-attachments/assets/b6f90cfe-04c4-4c5f-a201-c09a0fd08d56)
 
-**Code Reference**: [sampling.ino](/sampling/sampling.ino)
+**Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
 ### Data volume
 
 ![Volume_val](https://github.com/user-attachments/assets/71985b13-32af-4ba9-a3e0-60b834ccc697)
 
 
-**Code Reference**: [sampling.ino](/sampling/sampling.ino)
+**Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
 
 
