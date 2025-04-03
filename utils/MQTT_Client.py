@@ -18,6 +18,8 @@ MQTT_USERNAME = "loratest012@ttn"
 MQTT_PASSWORD = "NNSXS.TGW57KBC7FKNDDLOY44D5SDEZHX25YTLLT7B44A.BTP6NYHTQIOEA5SMMVVKPP6GSH4HKTAR6PRRKN7AI6IGOPISAPOQ"
 TTN_TOPIC = "#"
 
+authenticated = False
+
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with result code {rc}")
     if(not authenticated):
