@@ -3,9 +3,9 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "LoRaWan_APP.h"
-#include "fft_analysis.h"
-#include "aggregate.h"
-#include "shared_defs.h"
+#include <fft_analysis.h>
+#include <aggregate.h>
+#include <shared_defs.h>
 
 /* LoRaWAN Configuration ---------------------------------------------------- */
 #define LORA_JSON_BUFFER_SIZE 255
