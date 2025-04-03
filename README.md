@@ -23,22 +23,29 @@ For instance:
 ### Hardware
 | Component | Specification/Purpose | Notes |
 |:-------------|:--------------:|:--------------:|
-| **Main Device**         | Heltec ESP32 WiFi LoRa v3         | Integrated LoRa SX1262, OLED display |
+| **Main Device**         | Heltec ESP32 WiFi LoRa v3         | [Datasheet](https://heltec.org/project/wifi-lora-32-v3/) |
 | **Current Sensor**         | INA219 High-Side DC Current Sensor         |  I²C interface         |
-| **LoRaWAN Antenna**         | 868/928MHz Antenna         | EU-Region frequency compliance         |
+| **LoRaWAN Antenna**         | 868MHz (EU) / 915MHz (US)         | EU-Region frequency compliance         |
 
 - **Heltec ESP32 WiFi LoRa v3**   
 - **Current Sensor** INA219 High-Side DC Current Sensor, used for power consumption measurements.  
 - **LoRaWAN Antenna** used for connecting via LoRa protocol to **The Things Network**(TTN) via OTAA activation.
-### Dependencies  
-- **Arduino IDE** 
+- **Arduino IDE** (with Heltec packages installed)
 - **FreeRTOS** (included with ESP-IDF)  
-- **LoRaWAN Library** (e.g., `arduino-lmic` or `LoRaMac-node`)  
-- **ArduinoFFT** (for frequency analysis)  
-
+- **MQTT Broker** (e.g., Moquitto)
 ---
 
 ### Setup  
 1. Clone this repo:  
    ```bash
    git clone https://github.com/yourusername/ESP32-lora-adaptivesampling.git
+
+---
+
+## Contributing
+
+Feel free to submit pull requests for improvements or open issues for any bugs or questions.
+
+---
+## 📝 License
+This project is open-source. MIT License - See LICENSE.md.
