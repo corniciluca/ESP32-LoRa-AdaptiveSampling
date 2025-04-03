@@ -87,7 +87,7 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 - **Initial sampling frequency**: 1KHz
 - **Results:**
 
-  ![OptSampl](https://github.com/user-attachments/assets/fbd8a22a-328e-493b-8013-8758ab61b851)
+![OptSampl](https://github.com/user-attachments/assets/fbd8a22a-328e-493b-8013-8758ab61b851)
 
      
 The experimental results are corrected, indeed the input signal is a sum of two sinusoid with frequency 3Hz and 5Hz. This can also be view simply by doing the Fourier traform of the function:
@@ -99,9 +99,12 @@ The experimental results are corrected, indeed the input signal is a sum of two 
  
 ### Phase 3: Compute aggregates values
 
-In this phase,
+In this phase, we aggregate the samples of the signal by computing an average of the last 5 samples so an rolling average over a 5-samples window. The implementation is done using tools given by **FreeRTOS** with the _goal_ of **parallelism** and so **efficency**. 
+**Implmentation:**
+- **Task_A:** This task will sample the signal using the optimal frequency and each sample will be added to **xQueue_samples**, a mechanism used for inter-task communication that allows tasks to send and receive data in a thread-safe manner, ensuring synchronization between tasks.
+- **Task_B:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
 
-**Code Reference**: [sampling.ino](/sampling/sampling.ino)
+**Code Reference**: [aggregate.ino](/aggregate/aggregate.ino)
 
 ### Phase 4: Transmit averages to Edge Server via TTN/MQTT/WIFI
 
