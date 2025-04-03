@@ -54,11 +54,33 @@ Choosing between higher or lower sampling frequencies involves critical engineer
 To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained levegering, the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2 * $\f_max$, eventhough a common engineering practice is to pick $\f_sample$ = 2.5 * $\f_max$ for safety margins.
 
 **Program steps**
-1. **Sample at maximum frequency possible for the ESP32**
-     Given the maximum possible sample rate we sample the signal for a total of 1024 samples. This has the goal to correctly careaterize the input signal.
-2. **Compute FFT and apply window**
-3. **Compute the major peak of the signal**
-4. **Determine the optimal sampling frequency**
+1. **Sample at maximum frequency possible for the ESP32**:
+          Given the maximum possible sample rate we sample the signal for a total of 1024 samples. This has the goal to correctly careaterize the input signal.
+2. **Compute FFT and apply window**:
+        Calculate the frequency domain signal by apply a optimaze algoritm (Fast Fourier Trasform) that compute the Fourier Trasfomant of the signal. Then applies a Hamming window function to reduce the spectral leakage of the signal.
+4. **Compute the major peak of the signal**:
+     Assuming that the major peak correspond to the max frequency of the signal, as it is in this case, it's possible to determin it using the MajorPeak() method of the FFTArduino library. Generally this is not the case since the frequenzy componenet with the highest magnitude doesen't always correspond to the highest frequency(e.g. `20*sin(2π*3*t) + 4*sin(2π*5*t)`).
+     
+     ![FFT2-colab](https://github.com/user-attachments/assets/e171f215-6c02-46e4-aa84-b7a7f796dab2)
+     
+     So usually a more secure approch would be this one:
+     
+     ```
+     float get_max_freq(){
+       float noiseFloor = 0.1;
+       float lastValidFreq = 0;
+       
+       for (int i = 0; i < NUM_SAMPLES / 2; i++) {
+         if (g_samples_real[i] > noiseFloor) {
+           lastValidFreq = i;
+         }
+       }
+       return lastValidFreq * (g_sampling_frequency / (float)NUM_SAMPLES);
+     }
+     ```
+     In this case it's important to adjust the correct noise floor level.
+   
+5. **Determine the optimal sampling frequency** To do so simply multy the obtained value by 2.5.
 
 **Practical example**
 - **Input**: `2*sin(2π*3*t) + 4*sin(2π*5*t)`
@@ -76,6 +98,8 @@ The experimental results are corrected, indeed the input signal is a sum of two 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
  
 ### Phase 3: Compute aggregates values
+
+In this phase,
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
