@@ -130,11 +130,26 @@ In this phase we comunicate with an edge server thorugh the **MQTT** a lightweig
   
   ![transimission_mqtt_edge_server_results](https://github.com/user-attachments/assets/7b8930fc-8173-49ca-9059-572931b121d3)
 
-**Code Reference**: [aggregate.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
+**Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
 #### Phase 5: LoRaWAN Uplink to The Things Network (TTN) and MQTT Transmission
+In this phase, after computed the **rolling average**, instead of sending it to an edge server via **MQTT** + **WIFI**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will trasmit the values computed in Phase 3 over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
 
-**Code Reference**: [sampling.ino](/sampling/sampling.ino)
+**General approach**
+
+The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device authentication and network joining. OTAA is a more secure and flexible method compared to **ABP (Activation By Personalization)**  allows devices to rejoin the network after a reset or power cycle. The **payload** is composed by a single **float** value, thata reppresent the average computed by the **ESP32** device. The float occupy **4 bytes**, also the esp32 uses the **little-edian** representation of floats, this has to be taken into account when receving the payload. Before trying to establish a connection is fundamental to:
+* Set the **LoRaWAN** region(e.g. REGION_EU868)
+* Store **DevEUI** - A unique device identifier (like a MAC address). 
+* Store **AppEUI** - Identifies the application/provider (similar to a network ID). 
+* Store **AppKey** - A root key used for secure session key generation.
+* Load the **payload**
+* Specify the **appPort**
+
+**Details of implementation**
+
+
+
+**Code Reference**: [transmission_lora.ino](/transmission/transmission_mqtt/transmission_lora.ino)
 
 ### Energy consumption
 
