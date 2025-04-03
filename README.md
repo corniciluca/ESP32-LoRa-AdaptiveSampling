@@ -25,7 +25,7 @@ For instance:
 |:-------------|:--------------:|:--------------:|
 | **Main Device**         | Heltec ESP32 WiFi LoRa v3         | Integrated LoRa SX1262, OLED display |
 | **Current Sensor**         | INA219 High-Side DC Current Sensor         |  I²C interface         |
-| **LoRaWAN Antenna**         | 868/915MHz Antenna         | EU-Region frequency compliance         |
+| **LoRaWAN Antenna**         | 868/928MHz Antenna         | EU-Region frequency compliance         |
 
 - **Heltec ESP32 WiFi LoRa v3**   
 - **Current Sensor** INA219 High-Side DC Current Sensor, used for power consumption measurements.  
