@@ -1,11 +1,11 @@
 #include <Arduino.h>
-#include "communication.h"
-#include "fft_analysis.h"
+#include <communication.h>
+#include <fft_analysis.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "shared_defs.h"
-#include "aggregate.h"
+#include <shared_defs.h>
+#include <aggregate.h>
 
 // Configuration Constants
 #define TASK_STACK_SIZE      4096    // Bytes per task stack
