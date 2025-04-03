@@ -47,24 +47,46 @@ Choosing between higher or lower sampling frequencies involves critical engineer
      - **Advantages**: Resource-efficient.
      - **Drawbacks**: Risk of aliasing, ISI, and loss of high-frequency details.
 
-To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained levereing, the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2*F_max, eventhough a common engineering practice is to pick f_sample = 2.5*f_max for safety margins.
+To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained levegering, the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2 * $\f_max$, eventhough a common engineering practice is to pick $\f_sample$ = 2.5 * $\f_max$ for safety margins.
 
+**Program steps**
+1. **Sample at maximum frequency possible for the ESP32**
+     Given the maximum possible sample rate we sample the signal for a total of 1024 samples. This has the goal to correctly careaterize the input signal.
+2. **Compute FFT and apply window**
+3. **Compute the major peak of the signal**
+4. **Determine the optimal sampling frequency**
 
+**Practical example**
+     - **Input**:
+     -
+
+**Code Reference**: [sampling.ino](/sampling/sampling.ino)
  
-
 ### Phase 3: Compute aggregates values
+
+**Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
 ### Phase 4: Transmit averages to Edge Server via TTN/MQTT/WIFI
 
+
+
 #### Phase 4.1: Transmit averages to Edge Server via TTN/MQTT/WIFI
 
+**Code Reference**: [sampling.ino](/sampling/sampling.ino)
+
 #### Phase 4.2: Transmit averages to Edge Server via TTN/MQTT/WIFI
+
+**Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
 ### Energy consumption
 
 ### End-to-end latency
 
+**Code Reference**: [sampling.ino](/sampling/sampling.ino)
+
 ### Data volume
+
+**Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
 
 
