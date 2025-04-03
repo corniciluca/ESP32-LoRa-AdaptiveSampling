@@ -64,7 +64,7 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
      ![FFT2-colab](https://github.com/user-attachments/assets/e171f215-6c02-46e4-aa84-b7a7f796dab2)
      
      So usually a more secure approch would be this one:
-     
+
      ```
      float get_max_freq(){
        float noiseFloor = 0.1;
@@ -100,21 +100,26 @@ The experimental results are corrected, indeed the input signal is a sum of two 
 ### Phase 3: Compute aggregates values
 
 In this phase, we aggregate the samples of the signal by computing an average of the last 5 samples so an rolling average over a 5-samples window. The implementation is done using tools given by **FreeRTOS** with the _goal_ of **parallelism** and so **efficency**. 
+
 **Implmentation:**
+
 - **Task_A:** This task will sample the signal using the optimal frequency and each sample will be added to **xQueue_samples**, a mechanism used for inter-task communication that allows tasks to send and receive data in a thread-safe manner, ensuring synchronization between tasks.
 - **Task_B:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
 
+**Results**
+  
+  ![aggregate_results](https://github.com/user-attachments/assets/18dd8dac-d730-4851-b7d6-9e32155a60e2)
+
+
 **Code Reference**: [aggregate.ino](/aggregate/aggregate.ino)
 
-### Phase 4: Transmit averages to Edge Server via TTN/MQTT/WIFI
+### Phase 4: MQTT Transmission to an Edge Server over WiFi
 
 
 
-#### Phase 4.1: Transmit averages to Edge Server via TTN/MQTT/WIFI
+**Code Reference**: [aggregate.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
-**Code Reference**: [sampling.ino](/sampling/sampling.ino)
-
-#### Phase 4.2: Transmit averages to Edge Server via TTN/MQTT/WIFI
+#### Phase 5: LoRaWAN Uplink to The Things Network (TTN) and MQTT Transmission
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
