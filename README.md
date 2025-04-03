@@ -108,8 +108,7 @@ In this phase, we aggregate the samples of the signal by computing an average of
 
 **Results**
   
-  ![aggregate_results](https://github.com/user-attachments/assets/18dd8dac-d730-4851-b7d6-9e32155a60e2)
-
+  ![aggregate_results](https://github.com/user-attachments/assets/8a2ad38d-df65-405e-b05e-cca8d6fc8401)
 
 **Code Reference**: [aggregate.ino](/aggregate/aggregate.ino)
 
