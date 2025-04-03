@@ -114,7 +114,11 @@ In this phase, we aggregate the samples of the signal by computing an average of
 
 ### Phase 4: MQTT Transmission to an Edge Server over WiFi
 
-In this phase we comunicate with an edge server thorugh the **MQTT** protocol 
+In this phase we comunicate with an edge server thorugh the **MQTT** a lightweight publish-subscribe messaging protocol designed for resource-constrained IoT devices and low-bandwidth networks. The goal is to securely and efficiently transmit sensor data or system status updates from the device to the edge server over a WiFi connection.
+**Key Components**
+- **MQTT Broker:** A centralized server (e.g., Mosquitto or cloud-based brokers like AWS IoT Core) that manages message routing between publishers (devices) and subscribers (edge servers).
+- **Publisher:** The IoT device publishing sensor data (e.g., average) to a specific MQTT topic (e.g., `esp32/data`)
+- **Subscriber:** The edge server subscribing to relevant topics to receive and process incoming data. In this case the edge server will also reply on the topic `esp32/data/acks`. 
 
 
 **Code Reference**: [aggregate.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
