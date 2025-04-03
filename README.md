@@ -17,6 +17,21 @@ For instance:
    - **WiFi/MQTT :** transmits aggregate values to a nearby edge server in real-time using the lightweight MQTT protocol over WiFi, enabling low-latency monitoring and rapid response.  
    - **LoRaWAN + TTN + MQTT :** sends aggregate values to a edge server via LoRaWAN and The Things Network (TTN), leveraging TTN’s MQTT integration.  
 ---
+## Detailed Phase Breakdown
+
+### Phase 1: Determine Maximum Sampling Frequency
+### Phase 2: Compute Optimal sampling frequency
+### Phase 3: Compute aggregates values
+### Phase 4: Transmit averages to Edge Server via TTN/MQTT/WIFI
+#### Phase 4.1: Transmit averages to Edge Server via TTN/MQTT/WIFI
+#### Phase 4.2: Transmit averages to Edge Server via TTN/MQTT/WIFI
+
+### Energy consumption
+### End-to-end latency
+### Data volume
+
+
+
 ---
 
 ## 🛠\⚙️ Hardware & Software requirements  
