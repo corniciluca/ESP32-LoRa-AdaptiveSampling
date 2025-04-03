@@ -168,7 +168,7 @@ Using the key word **RTC_DATA_ATTR** will create a variable inside the **RTC** r
 
 The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN network infrastructure that enables low-power, long-range IoT communications globally. To be able to use TTN follow i followed these steps:
 
-1.**Register on TTN**
+1. **Register on TTN**
 
 - Go to [TTN Console](https://console.thethingsnetwork.org/), select your region, and **create an account**.  
 - Create an **Application**, then **Register a Device** to obtain your LoRaWAN credentials:  
@@ -176,11 +176,11 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
      - `AppEUI`  
      - `AppKey` 
           
-2.**Register device information**
+2. **Register device information**
 
-3.**Configure Payload Decoder**
+3. **Configure Payload Decoder**
 
-Since the payload recived by TTN will contains only bytes we need to convert them in some meangingfull information. Based on the fact that ESP32 transmit float of 4 bytes and with **little-edian** rappresentation as simple payload decoder could be the following:
+     Since the payload recived by TTN will contains only bytes we need to convert them in some meangingfull information. Based on the fact that ESP32 transmit float of 4 bytes and with **little-edian** rappresentation as simple payload decoder could be the following:
      
      
           function bytesToFloat(bytes, isLittleEndian = true) {
@@ -211,7 +211,7 @@ Since the payload recived by TTN will contains only bytes we need to convert the
             };
           }
 
-Once done that each message sent uplink will be decode in to a float value.
+     Once done that each message sent uplink will be decode in to a float value.
 * Example:
   
   ![TTN_Comunication](https://github.com/user-attachments/assets/0f168664-4790-4a55-889f-d58ce8cbff8d)
@@ -220,6 +220,7 @@ Once done that each message sent uplink will be decode in to a float value.
 
    Trasmit the payload to the edge server via MQTT. To do so i implemented an MQTT Client on the edge server.
 
+   ![MQTT_LORA](https://github.com/user-attachments/assets/000c95c5-b156-4ea2-aeaa-715b404f3872)
 
 
 **Code Reference**: [transmission_lora.ino](/transmission/transmission_mqtt/transmission_lora.ino)
