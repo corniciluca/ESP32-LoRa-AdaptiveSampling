@@ -21,16 +21,36 @@ For instance:
 
 ### Phase 1: Determine Maximum Sampling Frequency of Heltec ESP32 WIFI LoRa V3
 
-In this phase we determine the maximum sampling frequency at which our type of ESP32 can operate. This frequency is greatly influenced by how we acquire the signal that as to be sampled. For instance, if we capure the signal using a UART, the maximum sampling frequency will be limited by the baud rate of the UART connection, .In our case, the signal is generate locally in the firmware and internally sampled, this means that the maximum sampling frequency is limited by the minimum delay between two sample. Which it's bounded by the period of freeRTOS's ticks, defined by the OS as
+In this phase, we determine the maximum sampling frequency at which our type of ESP32 can operate. This frequency is greatly influenced by how we acquire the signal that as to be sampled. For instance, if we capure the signal using a UART, the maximum sampling frequency will be limited by the baud rate of the UART connection, .In our case, the signal is generate locally in the firmware and internally sampled, this means that the maximum sampling frequency is limited by the minimum delay between two sample. Which it's bounded by the period of freeRTOS's ticks, defined by the OS as
 ```
 portTICK_PERIOD_MS = 1 / configTICK_RATE_HZ = 1 / 1000 = 1 ms
 ```
+So we the maximum theoretical frequency is 1000Hz, specially if we assume that: 
 
+* The sampling task has the highest priority.
+* The sampling code itself adds negligible runtime overhead.
+
+In the code the maximum theoretical frequency is used to determine the optimal one. Sampling that higher frequencies will produce unresonable value of the samples.
+
+**Code Reference**: [sampling.ino](/sampling/sampling.ino)
+
+---
+
+### Phase 2: Compute Optimal sampling frequency
+
+Choosing between higher or lower sampling frequencies involves critical engineering trade-offs:
+**Trade offs**
+- **Higher Sampling Rates** :
+     - **Advantages**: Better signal reconstruction, reduced ISI.
+     - **Drawbacks**: Increased CPU load, memory usage, and power consumption.
+- **Lower Sampling Rates** :
+     - **Advantages**: Resource-efficient.
+     - **Drawbacks**: Risk of aliasing, ISI, and loss of high-frequency details.
+
+To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained levereing, the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2*F_max, eventhough a common engineering practice is to pick f_sample = 2.5*f_max for safety margins.
 
 
  
-
-### Phase 2: Compute Optimal sampling frequency
 
 ### Phase 3: Compute aggregates values
 
