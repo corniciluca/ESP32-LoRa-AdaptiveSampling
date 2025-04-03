@@ -9,9 +9,9 @@
 #define TASK_STACK_SIZE      4096    // Bytes per task stack
 #define SERIAL_BAUD_RATE     115200  // Serial monitor speed
 #define QUEUE_RECEIVE_DELAY  5       // ms to wait for queue items
-
+#define SIZE_AVG_ARRAY NUM_OF_SAMPLES_AGGREGATE-WINDOW_SIZE+1
 // Global averages storage
-float averages[NUM_OF_SAMPLES_AGGREGATE] = {0};
+float averages[SIZE_AVG_ARRAY] = {0};
 
 /**
  * @brief Prints formatted averages list to serial output
@@ -24,7 +24,7 @@ float averages[NUM_OF_SAMPLES_AGGREGATE] = {0};
 void print_averages() {
   Serial.println("\n--- Averages List ---");
   
-  for (int i = 0; i < NUM_OF_SAMPLES_AGGREGATE; i++) {
+  for (int i = 0; i < SIZE_AVG_ARRAY; i++) {
     Serial.print("Average [");
     Serial.print(i + 1);
     Serial.print("]: ");
@@ -85,7 +85,7 @@ void average_task(void *pvParameters) {
   
   // Circular buffer implementation
   float sampleReadings[WINDOW_SIZE] = {0};  // Storage for sliding window
-  int num_of_samples = 0;   // Total processed samples counter
+  int num_of_avgs = 0;   // Total processed samples counter
   int pos = 0;              // Current position in circular buffer
   int valid_samples = 0;    // Count of initialized buffer elements
 
@@ -107,12 +107,13 @@ void average_task(void *pvParameters) {
         average = sum / WINDOW_SIZE;
 
         // Store and log results
-        averages[num_of_samples] = average;
-        Serial.printf("[AGGREGATE] Window %d: %.2f\n", num_of_samples, average);
-
-        num_of_samples++;
-
-        if(num_of_samples >= NUM_OF_SAMPLES_AGGREGATE){
+        if(valid_samples == WINDOW_SIZE){
+          averages[num_of_avgs] = average;
+          Serial.printf("[AGGREGATE] Window %d: %.2f\n", num_of_avgs, average);
+          num_of_avgs++;
+        }
+        
+        if(num_of_avgs >= SIZE_AVG_ARRAY){
           Serial.print("*************\n");
           Serial.print("Average task finished\n");
           Serial.print("*************\n");
