@@ -16,7 +16,7 @@ For instance:
 4. **Transmits data** via:  
    - **WiFi/MQTT :** transmits aggregate values to a nearby edge server in real-time using the lightweight MQTT protocol over WiFi, enabling low-latency monitoring and rapid response.  
    - **LoRaWAN + TTN + MQTT :** sends aggregate values to a edge server via LoRaWAN and The Things Network (TTN), leveraging TTN’s MQTT integration.  
-  
+---
 ---
 
 ## 🛠\⚙️ Hardware & Software requirements  
@@ -35,10 +35,53 @@ For instance:
 - **MQTT Broker** (e.g., Moquitto)
 ---
 
-### Setup  
-1. Clone this repo:  
+## Setup  
+1. #### Clone this repo:  
    ```bash
-   git clone https://github.com/yourusername/ESP32-lora-adaptivesampling.git
+   git clone https://github.com/corniciluca/ESP32-LoRa-AdaptiveSampling.git
+   cd ESP32-LoRa-AdaptiveSampling
+2. #### Install dependencies:
+     - [**ArduinoFFT**](https://github.com/kosme/arduinoFFT) (Signal processing)
+     - [**PubSubClient**](https://github.com/knolleary/pubsubclient) (MQTT client)
+     - [**ArduinoJSON**](https://github.com/bblanchon/ArduinoJson) (v6.x recommended)
+     - **Adafruit IO Arduino** by Adafruit (version **4.3.0** or later).
+     - **Adafruit GFX Library** by Adafruit.
+3. #### ArduinoIDE Configuration:
+   3.1 Install ESP32 Boards:
+     - **File** > **Preferences** > **Additional Boards Manager URLs**:
+       
+          ```
+          https://resource.heltec.cn/download/package_heltec_esp32_index.json
+          ```
+     - Then go to **Tools → Board → Board Manager** and install **Heltec ESP32 Series Dev-Boards**.
+     - Go to **Sketch → Include Library → Manage Libraries**, search for and install:
+     - **Heltec ESP32 Dev-Boards** by Heltec.
+
+5. #### Install Libraries:
+   * #### Method 1: Install via Library Manager (ZIP File)
+     **Recommended for most users**  
+     1. **Download the Library**  
+        - Go to the [GitHub Releases](https://github.com/corniciluca/ESP32-LoRa-AdaptiveSampling) page.  
+        - Download `ESP32_General_Libraries.zip` file.  
+     
+     2. **Install in Arduino IDE**  
+        - Open Arduino IDE.  
+        - Navigate to:  
+          ```arduino
+          Sketch > Include Library > Add .ZIP Library...
+          ```  
+        - Select the downloaded `.zip` file.  
+     
+     3. **Verify Installation**  
+        - Check if the library appears in:  
+          ```arduino
+          Sketch > Include Library > ESP32_General_Libraries
+          ```
+   * #### Method 2: Manual Library Installation
+6. #### Create secrets.h and config.h:
+   * #### secrets.h: Library Installation via .ZIP
+   * #### config.h: Manual Library Installation
+7. #### Run:
 
 ---
 
