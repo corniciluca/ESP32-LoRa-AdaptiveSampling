@@ -114,12 +114,21 @@ In this phase, we aggregate the samples of the signal by computing an average of
 
 ### Phase 4: MQTT Transmission to an Edge Server over WiFi
 
-In this phase we comunicate with an edge server thorugh the **MQTT** a lightweight publish-subscribe messaging protocol designed for resource-constrained IoT devices and low-bandwidth networks. The goal is to securely and efficiently transmit sensor data or system status updates from the device to the edge server over a WiFi connection.
-**Key Components**
+In this phase we comunicate with an edge server thorugh the **MQTT** a lightweight publish-subscribe messaging protocol designed for resource-constrained IoT devices and low-bandwidth networks. The goal is to securely and efficiently transmit the **rolling average** windows from the device to the edge server over a WiFi connection.
+
+**Key Components for MQTT**
 - **MQTT Broker:** A centralized server (e.g., Mosquitto or cloud-based brokers like AWS IoT Core) that manages message routing between publishers (devices) and subscribers (edge servers).
 - **Publisher:** The IoT device publishing sensor data (e.g., average) to a specific MQTT topic (e.g., `esp32/data`)
 - **Subscriber:** The edge server subscribing to relevant topics to receive and process incoming data. In this case the edge server will also reply on the topic `esp32/data/acks`. 
 
+**Results**
+- **Heltec ESP32:**
+
+  ![transimission_mqtt_results](https://github.com/user-attachments/assets/81cab811-99a4-428d-8345-20a54ea1df2f)
+   
+- **Edge server:**
+  
+  ![transimission_mqtt_edge_server_results](https://github.com/user-attachments/assets/7b8930fc-8173-49ca-9059-572931b121d3)
 
 **Code Reference**: [aggregate.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
@@ -131,9 +140,14 @@ In this phase we comunicate with an edge server thorugh the **MQTT** a lightweig
 
 ### End-to-end latency
 
+![RTT_val](https://github.com/user-attachments/assets/b6f90cfe-04c4-4c5f-a201-c09a0fd08d56)
+
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
 ### Data volume
+
+![Volume_val](https://github.com/user-attachments/assets/71985b13-32af-4ba9-a3e0-60b834ccc697)
+
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
