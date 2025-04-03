@@ -19,15 +19,31 @@ For instance:
 ---
 ## Detailed Phase Breakdown
 
-### Phase 1: Determine Maximum Sampling Frequency
+### Phase 1: Determine Maximum Sampling Frequency of Heltec ESP32 WIFI LoRa V3
+
+In this phase we determine the maximum sampling frequency at which our type of ESP32 can operate. This frequency is greatly influenced by how we acquire the signal that as to be sampled. For instance, if we capure the signal using a UART, the maximum sampling frequency will be limited by the baud rate of the UART connection, .In our case, the signal is generate locally in the firmware and internally sampled, this means that the maximum sampling frequency is limited by the minimum delay between two sample. Which it's bounded by the period of freeRTOS's ticks, defined by the OS as
+```
+portTICK_PERIOD_MS = 1 / configTICK_RATE_HZ = 1 / 1000 = 1 ms
+```
+
+
+
+ 
+
 ### Phase 2: Compute Optimal sampling frequency
+
 ### Phase 3: Compute aggregates values
+
 ### Phase 4: Transmit averages to Edge Server via TTN/MQTT/WIFI
+
 #### Phase 4.1: Transmit averages to Edge Server via TTN/MQTT/WIFI
+
 #### Phase 4.2: Transmit averages to Edge Server via TTN/MQTT/WIFI
 
 ### Energy consumption
+
 ### End-to-end latency
+
 ### Data volume
 
 
