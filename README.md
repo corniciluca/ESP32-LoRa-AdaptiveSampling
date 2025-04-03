@@ -115,6 +115,7 @@ In this phase, we aggregate the samples of the signal by computing an average of
 
 ### Phase 4: MQTT Transmission to an Edge Server over WiFi
 
+In this phase we comunicate with an edge server thorugh the **MQTT** protocol
 
 
 **Code Reference**: [aggregate.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
