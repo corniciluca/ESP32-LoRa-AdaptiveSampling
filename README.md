@@ -61,8 +61,17 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 4. **Determine the optimal sampling frequency**
 
 **Practical example**
-     - **Input**:
-     -
+- **Input**: `2*sin(2π*3*t) + 4*sin(2π*5*t)`
+- **Initial sampling frequency**: 1KHz
+- **Results:**
+
+  ![OptSampl](https://github.com/user-attachments/assets/fbd8a22a-328e-493b-8013-8758ab61b851)
+
+     
+The experimental results are corrected, indeed the input signal is a sum of two sinusoid with frequency 3Hz and 5Hz. This can also be view simply by doing the Fourier traform of the function:
+
+![FFT-colab](https://github.com/user-attachments/assets/f895f12e-f4c3-4fad-beab-c2f712c5756a)
+
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
  
