@@ -2,8 +2,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "fft_analysis.h"
-#include "shared_defs.h"
+#include <fft_analysis.h>
+#include <shared_defs.h>
 
 // Configuration Constants
 #define TASK_STACK_SIZE      4096    // Bytes per task stack
