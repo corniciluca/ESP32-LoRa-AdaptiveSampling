@@ -34,7 +34,7 @@ In the code the maximum theoretical frequency is used to determine the optimal o
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
----
+#
 
 ### Phase 2: Compute Optimal sampling frequency
 
@@ -96,7 +96,7 @@ The experimental results are corrected, indeed the input signal is a sum of two 
 
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
- 
+#
 ### Phase 3: Compute aggregates values
 
 In this phase, we aggregate the samples of the signal by computing an average of the last 5 samples so an rolling average over a 5-samples window. The implementation is done using tools given by **FreeRTOS** with the _goal_ of **parallelism** and so **efficency**. 
@@ -111,6 +111,7 @@ In this phase, we aggregate the samples of the signal by computing an average of
   ![aggregate_results](https://github.com/user-attachments/assets/8a2ad38d-df65-405e-b05e-cca8d6fc8401)
 
 **Code Reference**: [aggregate.ino](/aggregate/aggregate.ino)
+#
 
 ### Phase 4: MQTT Transmission to an Edge Server over WiFi
 
@@ -131,7 +132,7 @@ In this phase we comunicate with an edge server thorugh the **MQTT** a lightweig
   ![transimission_mqtt_edge_server_results](https://github.com/user-attachments/assets/7b8930fc-8173-49ca-9059-572931b121d3)
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
-
+#
 #### Phase 5: LoRaWAN Uplink to The Things Network (TTN) and MQTT Transmission
 In this phase, after computed the **rolling average**, instead of sending it to an edge server via **MQTT** + **WIFI**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will trasmit the values computed in Phase 3 over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
 
@@ -227,7 +228,7 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 
 ---
 ### Energy consumption
-
+#
 This section provides a analysis of the energy consumption of the IoT system, focusing on the impact of different trasmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
 
 In both implentation there are two tasks:
@@ -258,13 +259,13 @@ While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy on
 In the case of wifi trasmission it can be difficult to stimate accuratly the power consumption, this is due to the fact that there is another task called **comunication_task** that reads the averages calculated by the **average_task**. As a result, the exact timing of when the ESP32 activates its WiFi module to transmit data via MQTT is inherently non-deterministic.
 
 ### End-to-end latency
-
+#
 ![RTT_val](https://github.com/user-attachments/assets/b6f90cfe-04c4-4c5f-a201-c09a0fd08d56)
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
 ### Data volume
-
+#
 ![Volume_val](https://github.com/user-attachments/assets/71985b13-32af-4ba9-a3e0-60b834ccc697)
 
 
