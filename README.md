@@ -225,7 +225,29 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 
 **Code Reference**: [transmission_lora.ino](/transmission/transmission_mqtt/transmission_lora.ino)
 
+---
 ### Energy consumption
+
+This section provides a analysis of the energy consumption of the IoT system, focusing on the impact of different trasmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
+
+In both implentation there are two tasks:
+
+- A **Sampling task**, that sample the input signal using the optimal frequency calculate in the Phase 2.
+  
+- A **Average task**, that compute the agrregated values of the samples.
+  
+Both of them are executed in **parallel** by **freeRTOS** , so due to the **nondeterministic** nature of **freeRTOS scheduling** we can't precisely distinct the power consumption of each of them. However, since the esp32 won't transition to any **sleep mode** while running these tasks, the power consumption will be circa equal to the consumption of the **active state** of the board(160~260mA).
+
+#### LoRa Trasmission
+**LoRa (Long Range)** is a wireless communication technology designed for **long-range**, **low-power** Internet of Things (IoT) applications. It operates in the sub-GHz bands (e.g., 868 MHz in Europe, 915 MHz in North America). This technique allows data to be transmitted over distances of several kilometers (up to 15 km in rural areas) while consuming **minimal power**.
+LoRa reduce the power consumption through a series of mechanisms:
+
+- **Duty Cycle**: LoRaWAN adheres to regional regulations (e.g., 1% duty cycle in the EU). Devices transmit briefly and then sleep, minimizing active time. In this case LoRa **Class A** is used, this kind of operational class is the most energy efficent.
+- **Adaptive Data Rate (ADR)**: Dynamically adjusts spreading factor (SF) and transmission power based on network conditions.
+- **Minimal Payload Size**: The size of payload is very limited (~200 bytes), , reducing transmission time and energy.
+
+
+#### Wifi Trasmission
 
 ### End-to-end latency
 
