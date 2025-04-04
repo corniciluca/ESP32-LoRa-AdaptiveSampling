@@ -407,7 +407,7 @@ Another important metric to calculate it's the data volume. In this phase i comp
      | `SUBSCRIBE_TOPIC`          | MQTT topic for receiving acknowledgments                                   | `"luca/esp32/acks"`        |
      | `INIT_SAMPLE_RATE`         | Initial sampling frequency for sensors (Hz)                                | `1000`                     |
      | `NUM_SAMPLES`              | Number of samples collected for FFT analysis                               | `1024`                     |
-     | `NUM_OF_SAMPLES_AGGREGATE` | Total number of aggregated values to collect before stopping               | `10`                       |
+     | `NUM_OF_SAMPLES_AGGREGATE` | Number of samples for which we have to compute aggregates values               | `10`                       |
 ---
 
 ## Contributing
