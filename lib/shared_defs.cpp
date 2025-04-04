@@ -1,5 +1,6 @@
 #include "shared_defs.h"
 #include <Arduino.h>
+#include "config.h"
 
 QueueHandle_t xQueueSamples = NULL;
 QueueHandle_t xQueueAvgs = NULL;

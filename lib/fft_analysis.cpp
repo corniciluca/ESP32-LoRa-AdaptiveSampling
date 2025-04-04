@@ -4,6 +4,7 @@
 #include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "config.h"
 #include "shared_defs.h"
 
 /// @brief Real component buffer for FFT input

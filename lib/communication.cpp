@@ -8,6 +8,7 @@
 #include "secrets.h"
 #include "fft_analysis.h"
 #include <ArduinoJson.h>
+#include "config.h"
 
 // Network Configuration
 #define MSG_BUFFER_SIZE 50  // Maximum size for MQTT messages

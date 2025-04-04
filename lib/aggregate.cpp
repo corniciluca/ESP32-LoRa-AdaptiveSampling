@@ -3,6 +3,7 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "shared_defs.h"
+#include "config.h"
 
 // Configuration Constants
 #define QUEUE_RECEIVE_DELAY  5       // ms to wait for queue items
