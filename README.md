@@ -246,10 +246,11 @@ LoRa reduce the power consumption through a series of mechanisms:
 - **Adaptive Data Rate (ADR)**: Dynamically adjusts spreading factor (SF) and transmission power based on network conditions.
 - **Minimal Payload Size**: The size of payload is very limited (~200 bytes), , reducing transmission time and energy.
 
-While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy only to **RTC & RTC Peripherals** and **ULP Coprocessor**. Having setted the Duty Cycle to 15 seconds, the device transmits a small payload over LoRa containing the computed rolling average (a 4-byte float) every 15 sconds. According to the LoRaWAN Regional Parameters for the EU868 band and using DR3 the estimate time-on-air is ~160 ms (calculated with [TTN LoRaWAN airtime calculator](https://www.thethingsnetwork.org/airtime-calculator/)
+While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy only to **RTC & RTC Peripherals** and **ULP Coprocessor**. Having setted the Duty Cycle to 15 seconds, the device transmits a small payload over LoRa containing the computed rolling average (a 4-byte float) every 15 sconds. According to the LoRaWAN Regional Parameters for the EU868 band and using DR3 the estimate time-on-air is ~160 ms (calculated with [TTN LoRaWAN airtime calculator](https://www.thethingsnetwork.org/airtime-calculator/). We also have to take into account the **vTaskDelay** in the code for this reason the total active time will be 260ms.
 
  A qualitative evaluation of the duty cycle is the following:
 
+![LORA_dutycycle](https://github.com/user-attachments/assets/a0bb145d-cd40-48a1-8b77-db1ef1cfbd3d)
 
 
 #### Wifi Trasmission
