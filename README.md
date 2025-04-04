@@ -1,5 +1,5 @@
 # ESP32-LoRa-AdaptiveSampling  
-**ESP32-based IoT system leveraging FreeRTOS to implement intelligent sensor sampling. The solution dynamically optimizes sampling rates using Nyquist-compliant FFT analysis, combined with efficient edge/cloud communication through hybrid LoRaWAN, MQTT and WIFI protocols.**  
+**ESP32-based IoT system leveraging FreeRTOS to implement intelligent sensor sampling. The solution dynamically optimizes sampling rates using Nyquist-compliant FFT analysis, combined with efficient edge/cloud communication through hybrid LoRaWAN, MQTT and Wi-Fi protocols.**  
 
 ---
 
@@ -14,12 +14,12 @@ For instance:
 
 3. **Computes local aggregates :** calculates aggregates of the sampled signal over a windows (e.g., data-driven sliding window).  
 4. **Transmits data** via:  
-   - **WiFi/MQTT :** transmits aggregate values to a nearby edge server in real-time using the lightweight MQTT protocol over WiFi, enabling low-latency monitoring and rapid response.  
+   - **Wi-Fi/MQTT :** transmits aggregate values to a nearby edge server in real-time using the lightweight MQTT protocol over Wi-Fi, enabling low-latency monitoring and rapid response.  
    - **LoRaWAN + TTN + MQTT :** sends aggregate values to a edge server via LoRaWAN and The Things Network (TTN), leveraging TTN’s MQTT integration.  
 ---
 ## Detailed Phase Breakdown
 
-### Phase 1: Determine Maximum Sampling Frequency of Heltec ESP32 WIFI LoRa V3
+### Phase 1: Determine Maximum Sampling Frequency of Heltec ESP32 Wi-Fi LoRa V3
 
 In this phase, we determine the maximum sampling frequency at which our type of ESP32 can operate. This frequency is greatly influenced by how we acquire the signal that as to be sampled. For instance, if we capure the signal using a UART, the maximum sampling frequency will be limited by the baud rate of the UART connection, .In our case, the signal is generate locally in the firmware and internally sampled, this means that the maximum sampling frequency is limited by the minimum delay between two sample. Which it's bounded by the period of freeRTOS's ticks, defined by the OS as
 ```
@@ -113,9 +113,9 @@ In this phase, we aggregate the samples of the signal by computing an average of
 **Code Reference**: [aggregate.ino](/aggregate/aggregate.ino)
 #
 
-### Phase 4: MQTT Transmission to an Edge Server over WiFi
+### Phase 4: MQTT Transmission to an Edge Server over Wi-Fi
 
-In this phase we comunicate with an edge server thorugh the **MQTT** a lightweight publish-subscribe messaging protocol designed for resource-constrained IoT devices and low-bandwidth networks. The goal is to securely and efficiently transmit the **rolling average** windows from the device to the edge server over a WiFi connection.
+In this phase we comunicate with an edge server thorugh the **MQTT** a lightweight publish-subscribe messaging protocol designed for resource-constrained IoT devices and low-bandwidth networks. The goal is to securely and efficiently transmit the **rolling average** windows from the device to the edge server over a Wi-Fi connection.
 
 **Key Components for MQTT**
 - **MQTT Broker:** A centralized server (e.g., Mosquitto or cloud-based brokers like AWS IoT Core) that manages message routing between publishers (devices) and subscribers (edge servers).
@@ -134,11 +134,11 @@ In this phase we comunicate with an edge server thorugh the **MQTT** a lightweig
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 #
 #### Phase 5: LoRaWAN Uplink to The Things Network (TTN) and MQTT Transmission
-In this phase, after computed the **rolling average**, instead of sending it to an edge server via **MQTT** + **WIFI**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will trasmit the values computed in Phase 3 over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
+In this phase, after computed the **rolling average**, instead of sending it to an edge server via **MQTT** + **Wi-Fi**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will transmit the values computed in Phase 3 over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
 
 **General approach**
 
-The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device authentication and network joining. OTAA is a more secure and flexible method compared to **ABP (Activation By Personalization)**  allows devices to rejoin the network after a reset or power cycle. The **payload** is composed by a single **float** value, thata reppresent the average computed by the **ESP32** device. The float occupy **4 bytes**, also the esp32 uses the **little-edian** representation of floats, this has to be taken into account when receving the payload. Before trying to establish a connection is fundamental to:
+The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device authentication and network joining. OTAA is a more secure and flexible method compared to **ABP (Activation By Personalization)**  allows devices to rejoin the network after a reset or power cycle. The **payload** is composed by a single **float** value, thata reppresent the average computed by the **ESP32** device. The float occupy **4 bytes**, also the esp32 uses the **little-endian** representation of floats, this has to be taken into account when receving the payload. Before trying to establish a connection is fundamental to:
 * Set the **LoRaWAN** region(e.g. REGION_EU868)
 * Store **DevEUI** - A unique device identifier (like a MAC address). 
 * Store **AppEUI** - Identifies the application/provider (similar to a network ID). 
@@ -148,7 +148,7 @@ The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device aut
 
 **Details of implementation**
 
-In this project we have used **LoRaWAN Class A** which is the default and most **energy-efficient** LoRaWAN device class, optimized for battery-powered IoT devices. This class has an extremely **low power** consumption due to the fact between the trasmitting of uplink messages it will **sleep**. It's important to notice that once the esp32 wakes up from the sleep state, it will be **restared** and the values stored in the normal variables will be lost. To prevent this from appening, it's possible to save some data in **RTC registers**, registers that wont be wiped once the esp32 wakes up for the sleep state.
+In this project we have used **LoRaWAN Class A** which is the default and most **energy-efficient** LoRaWAN device class, optimized for battery-powered IoT devices. This class has an extremely **low power** consumption due to the fact between the transmitting of uplink messages it will **sleep**. It's important to notice that once the esp32 wakes up from the sleep state, it will be **restared** and the values stored in the normal variables will be lost. To prevent this from appening, it's possible to save some data in **RTC registers**, registers that wont be wiped once the esp32 wakes up for the sleep state.
 Using the key word **RTC_DATA_ATTR** will create a variable inside the **RTC** registers
 
 * Example:
@@ -181,7 +181,7 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 
 3. **Configure Payload Decoder**
 
-     Since the payload recived by TTN will contains only bytes we need to convert them in some meangingfull information. Based on the fact that ESP32 transmit float of 4 bytes and with **little-edian** rappresentation as simple payload decoder could be the following:
+     Since the payload recived by TTN will contains only bytes we need to convert them in some meangingfull information. Based on the fact that ESP32 transmit float of 4 bytes and with **little-endian** rappresentation as simple payload decoder could be the following:
      
      
           function bytesToFloat(bytes, isLittleEndian = true) {
@@ -217,9 +217,9 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
   
   ![TTN_Comunication](https://github.com/user-attachments/assets/0f168664-4790-4a55-889f-d58ce8cbff8d)
 
-4. **Retrasmit via MQTT**
+4. **Retransmit via MQTT**
 
-   Trasmit the payload to the edge server via MQTT. To do so i implemented an MQTT Client on the edge server.
+   transmit the payload to the edge server via MQTT. To do so i implemented an MQTT Client on the edge server.
 
    ![MQTT_LORA](https://github.com/user-attachments/assets/000c95c5-b156-4ea2-aeaa-715b404f3872)
 
@@ -229,7 +229,7 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 ---
 ### Energy consumption
 #
-This section provides a analysis of the energy consumption of the IoT system, focusing on the impact of different trasmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
+This section provides a analysis of the energy consumption of the IoT system, focusing on the impact of different transmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
 
 In both implentation there are two tasks:
 
@@ -239,7 +239,7 @@ In both implentation there are two tasks:
   
 Both of them are executed in **parallel** by **freeRTOS** , so due to the **nondeterministic** nature of **freeRTOS scheduling** we can't precisely distinct the power consumption of each of them. However, since the esp32 won't transition to any **sleep mode** while running these tasks, the power consumption will be circa equal to the consumption of the **active state** of the board(160~260mA).
 
-#### LoRa Trasmission
+#### LoRa transmission
 **LoRa (Long Range)** is a wireless communication technology designed for **long-range**, **low-power** Internet of Things (IoT) applications. It operates in the sub-GHz bands (e.g., 868 MHz in Europe, 915 MHz in North America). This technique allows data to be transmitted over distances of several kilometers (up to 15 km in rural areas) while consuming **minimal power**.
 LoRa reduce the power consumption through a series of mechanisms:
 
@@ -254,18 +254,18 @@ While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy on
 ![LORA_dutycycle](https://github.com/user-attachments/assets/a0bb145d-cd40-48a1-8b77-db1ef1cfbd3d)
 
 
-#### Wifi Trasmission
+#### Wi-Fi transmission
 
-In the case of wifi trasmission it can be difficult to stimate accuratly the power consumption, this is due to the fact that there is another task called **comunication_task** that reads the averages calculated by the **average_task**. As a result, the exact timing of when the ESP32 activates its WiFi module to transmit data via MQTT is inherently non-deterministic.
+In the case of Wi-Fi transmission it can be difficult to estimate accuratly the power consumption, this is due to the fact that there is another task called **communication_task** that reads the averages calculated by the **average_task**. As a result, the exact timing of when the ESP32 activates its Wi-Fi module to transmit data via MQTT is inherently non-deterministic.
 
 ### End-to-end latency
 #
 
-In this phase we measure the Round Trip Time (RTT) between the ESP32 and the edge server whille using the WIFI/MQTT trasmition mode. 
+In this phase we measure the Round Trip Time (RTT) between the ESP32 and the edge server while using the Wi-Fi/MQTT transmition mode. 
 
 **Implementation**
 
-To do so we create an edge server MQTT_Client.py that connects to an MQTT broker and subscribe to a specific topic(e.g luca/esp32/data). In the ESP32 after the **Sampling_task** inserted the samples in to the xQueue_samples they will be read by **Average_task** that compute the aggregated values and add them to the xQueue_avgs. At the same time **Comunication_task** read from xQueue_Avgs and send the averages to the edge server via MQTT over The WIFI protocol. In order to compute the RTT each MQTT payload is made up of: ID, computed average and a timestamp. Once the edge server recived the event on the topic to which it's subscribed it will publish an ack on another topic, to which the esp32 is subscribed. Therefore, the esp32 recompute another timestamp and determine the RTT, by doing the difference between these two timestamps.
+To do so we create an edge server MQTT_Client.py that connects to an MQTT broker and subscribe to a specific topic(e.g luca/esp32/data). In the ESP32 after the **Sampling_task** inserted the samples in to the xQueue_samples they will be read by **Average_task** that compute the aggregated values and add them to the xQueue_avgs. At the same time **Communication_task** read from xQueue_Avgs and send the averages to the edge server via MQTT over The Wi-Fi protocol. In order to compute the RTT each MQTT payload is made up of: ID, computed average and a timestamp. Once the edge server recived the event on the topic to which it's subscribed it will publish an ack on another topic, to which the esp32 is subscribed. Therefore, the esp32 recompute another timestamp and determine the RTT, by doing the difference between these two timestamps.
 
 - Example :
 
@@ -275,7 +275,7 @@ To do so we create an edge server MQTT_Client.py that connects to an MQTT broker
 
 ### Data volume
 #
-Another important metric to calculate it's the data volume. In this phase i computed the data volume estimating the numbers of bytes trasmitted from the IoT device to the edge server and divided them by period of the trasmition phase. This is an estimation since both WIFI and MQTT could have an overhead on the number of bytes. This overhead can be estimated to be ~70 bytes for WIFI and ~26 bytes for MQTT.
+Another important metric to calculate it's the data volume. In this phase i computed the data volume estimating the numbers of bytes transmitted from the IoT device to the edge server and divided them by period of the transmition phase. This is an estimation since both Wi-Fi and MQTT could have an overhead on the number of bytes. This overhead can be estimated to be ~70 bytes for Wi-Fi and ~26 bytes for MQTT.
 
 **Implementation**
 
@@ -299,11 +299,11 @@ Another important metric to calculate it's the data volume. In this phase i comp
 ### Hardware
 | Component | Specification/Purpose | Notes |
 |:-------------|:--------------:|:--------------:|
-| **Main Device**         | Heltec ESP32 WiFi LoRa v3         | [Datasheet](https://heltec.org/project/wifi-lora-32-v3/) |
+| **Main Device**         | Heltec ESP32 Wi-Fi LoRa v3         | [Datasheet](https://heltec.org/project/Wi-Fi-lora-32-v3/) |
 | **Current Sensor**         | INA219 High-Side DC Current Sensor         |  I²C interface         |
 | **LoRaWAN Antenna**         | 868MHz (EU) / 915MHz (US)         | EU-Region frequency compliance         |
 
-- **Heltec ESP32 WiFi LoRa v3**   
+- **Heltec ESP32 Wi-Fi LoRa v3**   
 - **Current Sensor** INA219 High-Side DC Current Sensor, used for power consumption measurements.  
 - **LoRaWAN Antenna** used for connecting via LoRa protocol to **The Things Network**(TTN) via OTAA activation.
 - **Arduino IDE** (with Heltec packages installed)
@@ -388,8 +388,8 @@ Another important metric to calculate it's the data volume. In this phase i comp
      
      | Parameter | Purpose | Example Value |
      |:-------------|:--------------:|:--------------:|
-     | `**WIFI_SSID**`         | WiFi network name         | `"SSID"` |
-     | `**WIFI_PASSWORD**`         | WiFi password         |  `"PASSWORD"`         |
+     | `**Wi-Fi_SSID**`         | Wi-Fi network name         | `"SSID"` |
+     | `**Wi-Fi_PASSWORD**`         | Wi-Fi password         |  `"PASSWORD"`         |
      | `**MQTT_SERVER**`         | MQTT broker IP/hostname         | `"broker.hivemq.com"`         |
      | `**MQTT_PORT**`         | MQTT broker port         | `1883`         |
 
@@ -399,7 +399,7 @@ Another important metric to calculate it's the data volume. In this phase i comp
      | Parameter                  | Description                                                                 | Default Value              |
      |----------------------------|-----------------------------------------------------------------------------|----------------------------|
      | `WINDOW_SIZE`              | Number of samples in the moving average window                             | `5`                        |
-     | `WIFI_MAX_RETRIES`         | Maximum number of WiFi connection retry attempts                           | `10`                       |
+     | `Wi-Fi_MAX_RETRIES`         | Maximum number of Wi-Fi connection retry attempts                           | `10`                       |
      | `MSG_BUFFER_SIZE`          | Size of the buffer for MQTT messages (in bytes)                            | `50`                       |
      | `RETRY_DELAY`              | Delay between connection retries (in FreeRTOS ticks)                       | `2000 / portTICK_PERIOD_MS` |
      | `MQTT_LOOP`                | Interval for MQTT client loop (in FreeRTOS ticks)                          | `1000 / portTICK_PERIOD_MS` |
