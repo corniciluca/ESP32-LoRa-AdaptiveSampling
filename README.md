@@ -320,8 +320,8 @@ Another important metric to calculate it's the data volume. In this phase i comp
      - [**ArduinoFFT**](https://github.com/kosme/arduinoFFT) (Signal processing)
      - [**PubSubClient**](https://github.com/knolleary/pubsubclient) (MQTT client)
      - [**ArduinoJSON**](https://github.com/bblanchon/ArduinoJson) (v6.x recommended)
-     - **Adafruit IO Arduino** by Adafruit (version **4.3.0** or later).
-     - **Adafruit GFX Library** by Adafruit.
+     - [**Adafruit IO Arduino**](https://github.com/adafruit/Adafruit_IO_Arduino) by Adafruit (version **4.3.0** or later).
+     - [**Adafruit GFX Library**](https://github.com/adafruit/Adafruit-GFX-Library) by Adafruit.
 3. #### ArduinoIDE Configuration:
    3.1 Install ESP32 Boards:
      - **File** > **Preferences** > **Additional Boards Manager URLs**:
