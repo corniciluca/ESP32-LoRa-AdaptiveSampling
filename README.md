@@ -269,13 +269,24 @@ To do so we create an edge server MQTT_Client.py that connects to an MQTT broker
 
 - Example :
 
-![RTT_val](https://github.com/user-attachments/assets/b6f90cfe-04c4-4c5f-a201-c09a0fd08d56)
+     ![RTT_val](https://github.com/user-attachments/assets/b6f90cfe-04c4-4c5f-a201-c09a0fd08d56)
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
 ### Data volume
 #
-![Volume_val](https://github.com/user-attachments/assets/71985b13-32af-4ba9-a3e0-60b834ccc697)
+Another important metric to calculate it's the data volume. In this phase i computed the data volume estimating the numbers of bytes trasmitted from the IoT device to the edge server and divided them by period of the trasmition phase. This is an estimation since both WIFI and MQTT could have an overhead on the number of bytes. This overhead can be estimated to be ~70 bytes for WIFI and ~26 bytes for MQTT.
+
+**Implementation**
+
+     ```
+     Size of Data ≃ 2 * ((SIZE_AVG_ARRAY * sizeof(char) * MSG_BUFFER_SIZE) + 70B + 26B)
+     Volume ≃ Size of Data / Duration of comunication
+     ```
+
+- Example
+  
+  ![Volume_val](https://github.com/user-attachments/assets/71985b13-32af-4ba9-a3e0-60b834ccc697)
 
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
