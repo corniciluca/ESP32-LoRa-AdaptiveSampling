@@ -260,6 +260,15 @@ In the case of wifi trasmission it can be difficult to stimate accuratly the pow
 
 ### End-to-end latency
 #
+
+In this phase we measure the Round Trip Time (RTT) between the ESP32 and the edge server whille using the WIFI/MQTT trasmition mode. 
+
+**Implementation**
+
+To do so we create an edge server MQTT_Client.py that connects to an MQTT broker and subscribe to a specific topic(e.g luca/esp32/data). In the ESP32 after the **Sampling_task** inserted the samples in to the xQueue_samples they will be read by **Average_task** that compute the aggregated values and add them to the xQueue_avgs. At the same time **Comunication_task** read from xQueue_Avgs and send the averages to the edge server via MQTT over The WIFI protocol. In order to compute the RTT each MQTT payload is made up of: ID, computed average and a timestamp. Once the edge server recived the event on the topic to which it's subscribed it will publish an ack on another topic, to which the esp32 is subscribed. Therefore, the esp32 recompute another timestamp and determine the RTT, by doing the difference between these two timestamps.
+
+- Example :
+
 ![RTT_val](https://github.com/user-attachments/assets/b6f90cfe-04c4-4c5f-a201-c09a0fd08d56)
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
