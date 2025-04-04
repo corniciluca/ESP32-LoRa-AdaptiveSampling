@@ -333,7 +333,34 @@ In the case of wifi trasmission it can be difficult to stimate accuratly the pow
           ```arduino
           Sketch > Include Library > ESP32_General_Libraries
           ```
+          
    * #### Method 2: Manual Library Installation
+     **For developers/modifiers or custom setups**  
+     This method is ideal if you:  
+     - Plan to modify the library code  
+     - Need to place files in non-standard locations  
+     - Want direct control over library files    
+
+     **Step 1: Clone the Repository**
+     
+     ```bash
+     git clone https://github.com/corniciluca/ESP32-LoRa-AdaptiveSampling
+     ```
+     
+     **Step 2: Extracting the ZIP File via Command Line**
+     **Windows 10+ or Linux**
+     
+     ```bash
+     tar -xf ESP32_General_Libraries.zip -C output_folder
+     ```
+     
+     **Step 3: Copy the libraries into your personal project**
+
+     ```bash
+     cp ESP32-LoRa-AdaptiveSampling/lib/src/*.h YourProjectName/src/
+     cp ESP32-LoRa-AdaptiveSampling/lib/src/*.cpp YourProjectName/src/
+     ```
+     
 6. #### Create secrets.h and config.h:
    * #### secrets.h: Library Installation via .ZIP
    * #### config.h: Manual Library Installation
