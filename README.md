@@ -313,7 +313,7 @@ In the case of wifi trasmission it can be difficult to stimate accuratly the pow
      - Go to **Sketch → Include Library → Manage Libraries**, search for and install:
      - **Heltec ESP32 Dev-Boards** by Heltec.
 
-5. #### Install Libraries:
+4. #### Install Libraries:
    * #### Method 1: Install via Library Manager (ZIP File)
      **Recommended for most users**  
      1. **Download the Library**  
@@ -361,11 +361,33 @@ In the case of wifi trasmission it can be difficult to stimate accuratly the pow
      cp ESP32-LoRa-AdaptiveSampling/lib/src/*.cpp YourProjectName/src/
      ```
      
-6. #### Create secrets.h and config.h:
-   * #### secrets.h: Library Installation via .ZIP
-   * #### config.h: Manual Library Installation
-7. #### Run:
+5. #### Configuration of secrets.h & config.h:
+   These files centralize critical settings and credentials for the IoT system, ensuring **modularity**, **security**, and **easy customization**.
+   * #### secrets.h
+     Stores sensitive **credentials** and **network configurations**
+     
+     | Parameter | Purpose | Example Value |
+     |:-------------|:--------------:|:--------------:|
+     | `**WIFI_SSID**`         | WiFi network name         | `"SSID"` |
+     | `**WIFI_PASSWORD**`         | WiFi password         |  `"PASSWORD"`         |
+     | `**MQTT_SERVER**`         | MQTT broker IP/hostname         | `"broker.hivemq.com"`         |
+     | `**MQTT_PORT**`         | MQTT broker port         | `1883`         |
 
+   * #### config.h
+     Contains application-wide settings and parameters to **tune system behavior**
+     
+     | Parameter                  | Description                                                                 | Default Value              |
+     |----------------------------|-----------------------------------------------------------------------------|----------------------------|
+     | `WINDOW_SIZE`              | Number of samples in the moving average window                             | `5`                        |
+     | `WIFI_MAX_RETRIES`         | Maximum number of WiFi connection retry attempts                           | `10`                       |
+     | `MSG_BUFFER_SIZE`          | Size of the buffer for MQTT messages (in bytes)                            | `50`                       |
+     | `RETRY_DELAY`              | Delay between connection retries (in FreeRTOS ticks)                       | `2000 / portTICK_PERIOD_MS` |
+     | `MQTT_LOOP`                | Interval for MQTT client loop (in FreeRTOS ticks)                          | `1000 / portTICK_PERIOD_MS` |
+     | `PUBLISH_TOPIC`            | MQTT topic for publishing sensor data                                      | `"luca/esp32/data"`        |
+     | `SUBSCRIBE_TOPIC`          | MQTT topic for receiving acknowledgments                                   | `"luca/esp32/acks"`        |
+     | `INIT_SAMPLE_RATE`         | Initial sampling frequency for sensors (Hz)                                | `1000`                     |
+     | `NUM_SAMPLES`              | Number of samples collected for FFT analysis                               | `1024`                     |
+     | `NUM_OF_SAMPLES_AGGREGATE` | Total number of aggregated values to collect before stopping               | `10`                       |
 ---
 
 ## Contributing
