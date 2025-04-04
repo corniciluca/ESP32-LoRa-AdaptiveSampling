@@ -11,6 +11,7 @@
 
 // Network Configuration
 #define MSG_BUFFER_SIZE 50  // Maximum size for MQTT messages
+#define SIZE_AVG_ARRAY NUM_OF_SAMPLES_AGGREGATE-WINDOW_SIZE+1
 
 /* Global Variables --------------------------------------------------------- */
 float start_time = 0.0;      // Timestamp when communication starts (ms)
@@ -22,7 +23,7 @@ PubSubClient client(espClient);  // MQTT client instance
 char msg[MSG_BUFFER_SIZE];   // Buffer for MQTT messages
 
 // Round-Trip Time (RTT) measurement storage
-struct rtt_data rtt_data_array[NUM_OF_SAMPLES_AGGREGATE];
+struct rtt_data rtt_data_array[SIZE_AVG_ARRAY];
 
 /* Timing Functions --------------------------------------------------------- */
 /**
@@ -44,11 +45,11 @@ void end_time_comunication(){
  */
 void print_volume_of_communication(){
    float duration = finish_time - start_time;
-   float total_bytes = 2*NUM_OF_SAMPLES_AGGREGATE * sizeof(char)* MSG_BUFFER_SIZE;
+   float total_bytes = 2*SIZE_AVG_ARRAY * sizeof(char)* MSG_BUFFER_SIZE;
    float throughput = total_bytes / duration;
 
     Serial.println("\n--- Communication Metrics ---");
-    Serial.printf("  Samples collected: %d\n", NUM_OF_SAMPLES_AGGREGATE);
+    Serial.printf("  Samples collected: %d\n", SIZE_AVG_ARRAY);
     Serial.printf("       Start time ms: %.2f\n", start_time);
     Serial.printf("      Finish time ms: %.2f\n", finish_time);
     Serial.printf("  Communication rate: %.4f bytes/ms\n", throughput);
@@ -140,8 +141,8 @@ void connect_mqtt(void *pvParameters) {
   printf("[MQTT] Connected\n");
 
   printf("[MQTT] subscribe to topic: %s\n", SUBSCRIBE_TOPIC);
-  xTaskCreate(communication_mqtt_task, "task_publish", 4096, NULL, 0, NULL);
   client.subscribe(SUBSCRIBE_TOPIC);  
+  xTaskCreate(communication_mqtt_task, "task_publish", 4096, NULL, 0, NULL);
   
   // Main MQTT maintenance loop
   while (1) {
@@ -182,7 +183,7 @@ void callback(char* topic, byte* message, unsigned int length) {
       
       rtt_data_array[id] = {id,val,rtt};
       
-      if(id >= NUM_OF_SAMPLES_AGGREGATE-1){
+      if(id >= SIZE_AVG_ARRAY-1){
         print_rtts();
         end_time_comunication();
         print_volume_of_communication();
@@ -215,7 +216,7 @@ void send_to_mqtt(float val, int i){
  */
 void print_rtts(){
    Serial.println("\n--- RTT Values ---");
-  for (int i = 0; i < NUM_OF_SAMPLES_AGGREGATE; i++) {
+  for (int i = 0; i < SIZE_AVG_ARRAY; i++) {
     Serial.printf("ID: %d | RTT: %.1f ms\n", 
                  rtt_data_array[i].id, 
                  rtt_data_array[i].rtt);
@@ -236,7 +237,7 @@ void communication_mqtt_task(void *pvParameters){
       if(xQueueReceive(xQueueAvgs, &val, (TickType_t)5)) {
           send_to_mqtt(val,i);
           i++;
-          if(i >= NUM_OF_SAMPLES_AGGREGATE){
+          if(i >= SIZE_AVG_ARRAY){
               Serial.print("*************\n");
               Serial.print("Communication task finished\n");
               Serial.print("*************\n");

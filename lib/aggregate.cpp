@@ -8,7 +8,8 @@
 #define QUEUE_RECEIVE_DELAY  5       // ms to wait for queue items
 
 // Global averages storage
-float avgs[NUM_OF_SAMPLES_AGGREGATE] = {0};
+float avgs[SIZE_AVG_ARRAY] = {0};
+
 
 /**
  * @brief Prints formatted averages list to serial output
@@ -21,7 +22,7 @@ float avgs[NUM_OF_SAMPLES_AGGREGATE] = {0};
 void printAverages() {
   Serial.println("\n--- Averages List ---");
   
-  for (int i = 0; i < NUM_OF_SAMPLES_AGGREGATE; i++) {
+  for (int i = 0; i < SIZE_AVG_ARRAY; i++) {
     Serial.print("Average [");
     Serial.print(i + 1);
     Serial.print("]: ");
@@ -70,14 +71,16 @@ void average_task_handler(void *pvParameters) {
         average = sum / WINDOW_SIZE;
 
         // Store and log results
-        avgs[num_of_samples] = average;
-        Serial.printf("[AGGREGATE] Window %d: %.2f\n", num_of_samples, average);
-        
-        xQueueSend(xQueueAvgs, &average, (TickType_t)portMAX_DELAY);
+        if(valid_samples == WINDOW_SIZE){
+          avgs[num_of_samples] = average;
+          Serial.printf("[AGGREGATE] Window %d: %.2f\n", num_of_samples, average);
+          
+          xQueueSend(xQueueAvgs, &average, (TickType_t)portMAX_DELAY);
 
-        num_of_samples++;
+          num_of_samples++;
+        }
 
-        if(num_of_samples >= NUM_OF_SAMPLES_AGGREGATE){
+        if(num_of_samples >= SIZE_AVG_ARRAY){
           Serial.print("*************\n");
           Serial.print("Average task finished\n");
           Serial.print("*************\n");
