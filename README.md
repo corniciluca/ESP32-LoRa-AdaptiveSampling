@@ -3,22 +3,6 @@
 
 ---
 
-
-## 📌 Overview  
-ESP32-based IoT projects concerning:  
-
-1. **Maximum Sampling Frequency Identification :** demonstrates the ESP32's capability to achieve high-frequency sampling.
-
-2. **Optimal Sampling Frequency Adaptation :** dynamically adjusts sampling rates using FFT analysis, adhering to Nyquist principles with a safety margin (e.g., sampling at 2.5× the detected maximum frequency).
-For instance:
-      * Detects peak frequency 𝑓 = 5Hz → sets sampling rate to 12.5Hz (2.5×). 
-
-3. **Computes local aggregates :** calculates aggregates of the sampled signal over a windows (e.g., data-driven sliding window).  
-4. **Transmits data** via:  
-   - **Wi-Fi/MQTT :** transmits aggregate values to a nearby edge server in real-time using the lightweight MQTT protocol over Wi-Fi, enabling low-latency monitoring and rapid response.  
-   - **LoRaWAN + TTN + MQTT :** sends aggregate values to a edge server via LoRaWAN and The Things Network (TTN), leveraging TTN’s MQTT integration.  
----
-
 # Table of Contents
 
 1. [Overview](#-overview)
@@ -35,6 +19,22 @@ For instance:
 5. [Contributing](#contributing)
 6. [License](#-license)
 
+---
+
+
+## 📌 Overview  
+ESP32-based IoT projects concerning:  
+
+1. **Maximum Sampling Frequency Identification :** demonstrates the ESP32's capability to achieve high-frequency sampling.
+
+2. **Optimal Sampling Frequency Adaptation :** dynamically adjusts sampling rates using FFT analysis, adhering to Nyquist principles with a safety margin (e.g., sampling at 2.5× the detected maximum frequency).
+For instance:
+      * Detects peak frequency 𝑓 = 5Hz → sets sampling rate to 12.5Hz (2.5×). 
+
+3. **Computes local aggregates :** calculates aggregates of the sampled signal over a windows (e.g., data-driven sliding window).  
+4. **Transmits data** via:  
+   - **Wi-Fi/MQTT :** transmits aggregate values to a nearby edge server in real-time using the lightweight MQTT protocol over Wi-Fi, enabling low-latency monitoring and rapid response.  
+   - **LoRaWAN + TTN + MQTT :** sends aggregate values to a edge server via LoRaWAN and The Things Network (TTN), leveraging TTN’s MQTT integration.  
 ---
 ## Detailed Phase Breakdown
 
