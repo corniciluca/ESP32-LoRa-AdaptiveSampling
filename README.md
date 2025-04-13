@@ -112,9 +112,12 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
      In this case it's important to adjust the correct noise floor level.
    
 5. **Determine the optimal sampling frequency** To do so simply multy the obtained value by 2.5.
+6. **Sampling at the new found frequency** Once computed the optimal frequency take samples based on this new found frequency.
+7. **Restart if need** it's possible for certain real-world scenarios when for example the observed phenomena changes, that the previously found frequency is not correct anymore. In these cases we need to detect the anomaly and restart the process in order to find a new optimal frequency. 
 
-**Practical example**
-- **Input**: `2*sin(2π*3*t) + 4*sin(2π*5*t)`
+**Implementation**
+- **Input 1**: `2*sin(2*PI*3*t)`
+- **Input 2**: `15*sin(2*PI*2*t) + 10*sin(2*PI*3*t)`
 - **Initial sampling frequency**: 1KHz
 - **Results:**
 
