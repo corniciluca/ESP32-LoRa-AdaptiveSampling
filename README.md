@@ -40,25 +40,37 @@ For instance:
 
 ### Phase 1: Determine Maximum Sampling Frequency of Heltec ESP32 Wi-Fi LoRa V3
 
-In this phase, we determine the maximum sampling frequency at which our type of ESP32 can operate. This frequency is greatly influenced by how we acquire the signal that as to be sampled. For instance, if we capure the signal using a UART, the maximum sampling frequency will be limited by the baud rate of the UART connection, .In our case, the signal is generate locally in the firmware and internally sampled, this means that the maximum sampling frequency is limited by the minimum delay between two sample. Which it's bounded by the period of freeRTOS's ticks, defined by the OS as
+In this phase, we determine the maximum sampling frequency at which our type of ESP32 can operate. This frequency is greatly influenced by how we acquire the signal that has to be sampled. For instance, if we capture the signal using a UART, the maximum sampling frequency will be limited by the baud rate of the UART connection. In our case, the signal is generate locally in the firmware and internally sampled, this means that the maximum sampling frequency is limited by the minimum delay between two sample. Which it's bounded by the period of freeRTOS's ticks, defined by the OS as
 ```
 portTICK_PERIOD_MS = 1 / configTICK_RATE_HZ = 1 / 1000 = 1 ms
 ```
-So we the maximum theoretical frequency is 1000Hz, specially if we assume that: 
+So we get that the frequency is 1000Hz, specially if we assume that: 
 
 * The sampling task has the highest priority.
 * The sampling code itself adds negligible runtime overhead.
 
-In the code the maximum theoretical frequency is used to determine the optimal one. Sampling that higher frequencies will produce unresonable value of the samples.
+configTICK_RATE_HZ is a configuration constant that measure the frequency of the RTOS tick interrupt. Therefore a higher tick frequency means time can be measured to a higher resolution. However, it is not reccomended to use higher frequencies, since the RTOS kernel will use more CPU time so be less efficient. Moreover, a high tick rate will also reduce the 'time slice' given to each task. For these reasons in this project configTICK_RATE_HZ is setted to 1000.
 
-**Code Reference**: [sampling.ino](/sampling/sampling.ino)
+#### Implementation
+
+In order to prove the prevuosly-made statements, i simulated the sampling of a signal giving a 1 tick delay between each samples and configTICK_RATE_HZ = 1000.
+
+![max-freq-1](https://github.com/user-attachments/assets/8302a3cf-3048-49e3-9191-8def2c587a0f)
+
+For configTICK_RATE_HZ = 240MHz, so equal to the clock frequency of the esp32's microprocessor, the results are the followings:
+
+![max-freq-2](https://github.com/user-attachments/assets/057f4c6a-8edb-4c16-9063-724a4fe87829)
+
+**Code Reference**: [max-frequency.ino](/max-frequency/max-frequency.ino)
 
 #
 
 ### Phase 2: Compute Optimal sampling frequency
 
 Choosing between higher or lower sampling frequencies involves critical engineering trade-offs:
+
 **Trade offs**
+
 - **Higher Sampling Rates** :
   
      - **Advantages**: Better signal reconstruction, reduced ISI.
@@ -74,9 +86,9 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 
 **Program steps**
 1. **Sample at maximum frequency possible for the ESP32**:
-          Given the maximum possible sample rate we sample the signal for a total of 1024 samples. This has the goal to correctly careaterize the input signal.
+          Given the maximum possible sample rate we sample the signal. This has the goal to correctly characterize the input signal.
 2. **Compute FFT and apply window**:
-        Calculate the frequency domain signal by apply a optimaze algoritm (Fast Fourier Trasform) that compute the Fourier Trasfomant of the signal. Then applies a Hamming window function to reduce the spectral leakage of the signal.
+        Calculate the frequency domain signal by apply a optimazed algoritm (Fast Fourier Trasform) that compute the Fourier Trasfomant of the signal. Then applies a Hamming window function to reduce the spectral leakage of the signal.
 4. **Compute the major peak of the signal**:
      Assuming that the major peak correspond to the max frequency of the signal, as it is in this case, it's possible to determin it using the MajorPeak() method of the FFTArduino library. Generally this is not the case since the frequenzy componenet with the highest magnitude doesen't always correspond to the highest frequency(e.g. `20*sin(2π*3*t) + 4*sin(2π*5*t)`).
      
