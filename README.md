@@ -307,6 +307,9 @@ When the anomaly is detected the esp32 will perform another oversampling in orde
 
 ![FFT (1)](https://github.com/user-attachments/assets/2dd7be9c-f6dd-44b6-8ae2-1a72b06ac592)
 
+We can also stimate the difference of power consumption between oversampling at 1kHz and sampling at 10Hz. Assuming that time needed to take a sample it's 1ms, in the first case, since there are 1000 samples in 1 seconds, the esp32 will consume 200mW for 1000ms
+consuming 200mW/s, whereas in the second case it will take 10 samples for each second consuming 200mW * 10/1000 + 2mW* 990/100 = 3.98mW/s. this means that using the optimal frequnecy for sampling we save up to 196 mW/s.
+
 **Code Reference**: [max-frequency.ino](/max-frequency/max-frequency.ino)
 
 #### LoRa transmission
@@ -322,6 +325,11 @@ While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy on
  A qualitative evaluation of the duty cycle is the following:
 
 ![LORA_dutycycle](https://github.com/user-attachments/assets/a0bb145d-cd40-48a1-8b77-db1ef1cfbd3d)
+
+**Practical analysis**
+
+
+
 
 
 #### Wi-Fi transmission
