@@ -116,6 +116,8 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 7. **Sampling at the new found frequency** Once computed the optimal frequency take samples based on this new found frequency.
 8. **Restart if need** it's possible for certain real-world scenarios when for example the observed phenomena changes, that the previously found frequency is not correct anymore. In these cases we need to detect the anomaly and restart the process in order to find a new optimal frequency. 
 
+#
+
 **Implementation**
 - **Input 1**: `2*sin(2π*3*t) + 4*sin(2π*5*t)`
   
@@ -126,8 +128,14 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
    ![FFT3-colab](https://github.com/user-attachments/assets/f76eee0f-a0b9-46ac-b284-531f89de8168)
 
 - **Initial sampling frequency**: 1KHz
-  
-   In this experiment first we simulate the signal of a phenomena using _input 1_, compute the FFT and the optimal frequency, then after 100 samples the program induce an anomaly, consisting in the change of the sampled signal into _input 2_.
+
+
+
+- **Schema**
+
+  ![schema_2P](https://github.com/user-attachments/assets/83a72765-aa38-41e6-973b-53ee93d940f2)
+
+  In this experiment first we simulate the signal of a phenomena using _input 1_, compute the FFT and the optimal frequency, then after 100 samples the program induce an anomaly, consisting in the change of the sampled signal into _input 2_.
 
 - **Anomaly detection**
      
@@ -141,7 +149,7 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
    
        This other approach uses the median and median absolute deviation, that are much more stable to outliers and makes less assumptionions on the distribution of the samples, making it able to effectively detect anomalies even in non-normally distributed data.
    
-   **Results**
+- **Results**
 
      ![Anom_1](https://github.com/user-attachments/assets/dc2437db-ce70-45de-81ed-4c8fd0d9136e)
 
@@ -152,12 +160,12 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 #
 ### Phase 3: Compute aggregates values
 
-In this phase, we aggregate the samples of the signal by computing an average of the last 5 samples so an rolling average over a 5-samples window. The implementation is done using tools given by **FreeRTOS** with the _goal_ of **parallelism** and so **efficency**. 
+In this phase, we aggregate the samples of the signal by computing an average of the last 5 samples using a rolling average over a 5-samples window. The implementation is done using tools given by **FreeRTOS** with the _goal_ of **parallelism** and so **efficency**. 
 
-**Implmentation:**
+**Implementation:**
 
-- **Task_A:** This task will sample the signal using the optimal frequency and each sample will be added to **xQueue_samples**, a mechanism used for inter-task communication that allows tasks to send and receive data in a thread-safe manner, ensuring synchronization between tasks.
-- **Task_B:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
+- **Sampling task:** This task will sample the signal using the optimal frequency and each sample will be added to **xQueue_samples**, a mechanism used for inter-task communication that allows tasks to send and receive data in a thread-safe manner, ensuring synchronization between tasks. This task will have the highest priority, otherwise the FreeRTOS scheduler could decide to schedule the **averaging task** and this could interfere with the chosen sampling frequency.
+- **Averaging task:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
 
 **Results**
   
