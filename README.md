@@ -328,8 +328,8 @@ While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy on
 
 **Practical analysis**
 
-In this part i measured the energy consumption of the different phases and the comunication with LoRa. As it possible to see in the following imgaes, firstly we compute determine optimal frequency 
-
+In this part i measured the energy consumption of the different phases and the comunication with LoRa. As it possible to see in the following imgaes, firstly we compute determine optimal frequency equal to 10Hz and start to samples. In this case we use an aggregate value based on a time-window. For this reason the size of the window and the numer of samples are equal to SECONDS_WINDOW * freq. after the esp32 compute the average it will send it through LoRaWAN, TTN and MQTT to the edge server. Once the ESP32 sned the message via LoRaWAN it will go in to deep sleep for a given period bounded by the restrictions on the duty cycle in europe( 1% duty cycle). After the device wakes up it will resample the signal without re-computing the optimal rate.
+ 
 ![FFT ,sampling aggregate](https://github.com/user-attachments/assets/34794803-c83b-4f44-968b-dc2a30ca4305)
 
 ![Deep sleep](https://github.com/user-attachments/assets/c4237de8-d7c6-49e3-a3ca-54ed1b3c4892)
