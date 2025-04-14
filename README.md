@@ -328,12 +328,15 @@ While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy on
 
 **Practical analysis**
 
+In this part i measured the energy consumption of the different phases and the comunication with LoRa. As it possible to see in the following imgaes, firstly we compute determine optimal frequency 
+
 ![FFT ,sampling aggregate](https://github.com/user-attachments/assets/34794803-c83b-4f44-968b-dc2a30ca4305)
 
 ![Deep sleep](https://github.com/user-attachments/assets/c4237de8-d7c6-49e3-a3ca-54ed1b3c4892)
 
 ![Screenshot from 2025-04-14 18-26-18](https://github.com/user-attachments/assets/9ef3a5f3-b05b-447f-9f61-50c19450fee8)
 
+**Code Reference**: [transmission_lora.ino](/transmission/transmission_mqtt/transmission_lora.ino)
 
 #
 #### Wi-Fi transmission
