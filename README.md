@@ -127,10 +127,28 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 
 - **Initial sampling frequency**: 1KHz
   
-   In this experiment first we simulate the signal of a phenomena using _input 1_, compute the FFT and the optimal frequency, then after 100 samples the program induce an anomaly, consisting in the change of the sampled signal into _input 2_. The firmware will detect    this using a window of size SAMPLING_WINDOW_SIZE. Specifically if a given sample it's distant more than AMPLITUDE_THRESHOLD_STD_DEV * standard deviation of window, then an anomaly it's detected. Once an anomaly it's detected the esp32 will recompute the FFT and th     new sampling frequency. 
+   In this experiment first we simulate the signal of a phenomena using _input 1_, compute the FFT and the optimal frequency, then after 100 samples the program induce an anomaly, consisting in the change of the sampled signal into _input 2_.
 
+- **Anomaly detection**
+     
+     - **Standard deviation-based method**:
+     
+       The firmware will detect this using a window of size SAMPLING_WINDOW_SIZE. Specifically if a given sample it's distant more than AMPLITUDE_THRESHOLD_STD_DEV * standard deviation from the mean of the window, then an anomaly it's detected. Once an anomaly it's
+       detected the esp32 will recompute the FFT and the new sampling frequency. This approach is real simple to apply, but has some downfalls: the standard deviation is highly sensitive to extreme values (outliers), assumes a normal distribution of the data nthis is
+       generally not true so it will not accurately represent the data's variability.
+     
+     - **Hample filter**
+   
+       This other approach uses the median and median absolute deviation, that are much more stable to outliers and makes less assumptionions on the distribution of the samples, making it able to effectively detect anomalies even in non-normally distributed data.
+   
+   **Results**
+
+     ![Anom_1](https://github.com/user-attachments/assets/dc2437db-ce70-45de-81ed-4c8fd0d9136e)
+
+     ![Anom_2](https://github.com/user-attachments/assets/94f12953-0cd0-42bf-b9c3-69ef57347ae0)
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
+
 #
 ### Phase 3: Compute aggregates values
 
