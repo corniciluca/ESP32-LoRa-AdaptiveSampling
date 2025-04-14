@@ -291,9 +291,9 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 
 ---
 ### Energy consumption
-#
-This section provides a analysis of the energy consumption of the IoT system, focusing on the impact of different transmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
 
+This section provides a analysis of the energy consumption of the IoT system, focusing on the impact of different transmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
+#
 #### Over Sampling\Adaptive Sampling
 
 In this part we discuss the power consumption differences between over-sampling a signal and adaptive sampling. In [max-frequency.ino](/max-frequency/max-frequency.ino) the esp32 firstly oversample the given signal using 1 KHz then after computed the optimal sample 
@@ -311,7 +311,7 @@ We can also stimate the difference of power consumption between oversampling at 
 consuming 200mW/s, whereas in the second case it will take 10 samples for each second consuming 200mW * 10/1000 + 2mW* 990/100 = 3.98mW/s. this means that using the optimal frequnecy for sampling we save up to 196 mW/s.
 
 **Code Reference**: [max-frequency.ino](/max-frequency/max-frequency.ino)
-
+#
 #### LoRa transmission
 **LoRa (Long Range)** is a wireless communication technology designed for **long-range**, **low-power** Internet of Things (IoT) applications. It operates in the sub-GHz bands (e.g., 868 MHz in Europe, 915 MHz in North America). This technique allows data to be transmitted over distances of several kilometers (up to 15 km in rural areas) while consuming **minimal power**.
 LoRa reduce the power consumption through a series of mechanisms:
@@ -328,13 +328,19 @@ While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy on
 
 **Practical analysis**
 
+![FFT ,sampling aggregate](https://github.com/user-attachments/assets/34794803-c83b-4f44-968b-dc2a30ca4305)
+
+![Deep sleep](https://github.com/user-attachments/assets/c4237de8-d7c6-49e3-a3ca-54ed1b3c4892)
+
+![Screenshot from 2025-04-14 18-26-18](https://github.com/user-attachments/assets/9ef3a5f3-b05b-447f-9f61-50c19450fee8)
 
 
-
-
+#
 #### Wi-Fi transmission
 
 In the case of Wi-Fi transmission it can be difficult to estimate accuratly the power consumption, this is due to the fact that there is another task called **communication_task** that reads the averages calculated by the **average_task**. As a result, the exact timing of when the ESP32 activates its Wi-Fi module to transmit data via MQTT is inherently non-deterministic.
+
+---
 
 ### End-to-end latency
 #
@@ -351,8 +357,9 @@ To do so we create an edge server MQTT_Client.py that connects to an MQTT broker
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
-### Data volume
 #
+### Data volume
+
 Another important metric to calculate it's the data volume. In this phase i computed the data volume estimating the numbers of bytes transmitted from the IoT device to the edge server and divided them by period of the transmition phase. This is an estimation since both Wi-Fi and MQTT could have an overhead on the number of bytes. This overhead can be estimated to be ~70 bytes for Wi-Fi and ~26 bytes for MQTT.
 
 **Implementation**
