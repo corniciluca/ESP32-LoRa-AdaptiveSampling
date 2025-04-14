@@ -89,44 +89,45 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
           Given the maximum possible sample rate we sample the signal. This has the goal to correctly characterize the input signal.
 2. **Compute FFT and apply window**:
         Calculate the frequency domain signal by apply a optimazed algoritm (Fast Fourier Trasform) that compute the Fourier Trasfomant of the signal. Then applies a Hamming window function to reduce the spectral leakage of the signal.
-4. **Compute the major peak of the signal**:
-     Assuming that the major peak correspond to the max frequency of the signal, as it is in this case, it's possible to determin it using the MajorPeak() method of the FFTArduino library. Generally this is not the case since the frequenzy componenet with the highest magnitude doesen't always correspond to the highest frequency(e.g. `20*sin(2π*3*t) + 4*sin(2π*5*t)`).
-     
-     ![FFT2-colab](https://github.com/user-attachments/assets/e171f215-6c02-46e4-aa84-b7a7f796dab2)
-     
-     So usually a more secure approch would be this one:
+4. **Compute the max frequency of the signal**:
+     This has been done using the arduinoFFT library to compute the magnitude values of the signal. Given then the magnitude of each frequency we can infer what is the maximum one by finding each peak and choicing the one with highest frequency.
 
-     ```
-     float get_max_freq(){
-       float noiseFloor = 0.1;
-       float lastValidFreq = 0;
-       
-       for (int i = 0; i < NUM_SAMPLES / 2; i++) {
-         if (g_samples_real[i] > noiseFloor) {
-           lastValidFreq = i;
+   **Example**
+   
+   ```
+      double maxFrequency = -1;
+      // Loop through all bins (skip DC at i=0)
+      for (uint16_t i = 1; i < (NUM_SAMPLES >> 1); i++) {
+       // Check if the current bin is a local maximum and above the noise floor
+       if (g_samples_real[i] > g_samples_real[i-1] && g_samples_real[i] > g_samples_real[i+1] && g_samples_real[i] > NOISE_THRESHOLD) {
+         double currentFreq = (i * g_sampling_frequency) / NUM_SAMPLES;
+         // Update maxFrequency if this peak has a higher frequency
+         if (currentFreq > maxFrequency) {
+           maxFrequency = currentFreq;
          }
        }
-       return lastValidFreq * (g_sampling_frequency / (float)NUM_SAMPLES);
-     }
-     ```
-     In this case it's important to adjust the correct noise floor level.
+      }
+     return maxFrequency;
+   ```
+   For the implementation i considered only the first half of g_samples_real since arduinoFFT store the computed magnitutes in this place.
+   Moreover, in this case it's important to adjust the correct noise floor level.
    
-5. **Determine the optimal sampling frequency** To do so simply multy the obtained value by 2.5.
-6. **Sampling at the new found frequency** Once computed the optimal frequency take samples based on this new found frequency.
-7. **Restart if need** it's possible for certain real-world scenarios when for example the observed phenomena changes, that the previously found frequency is not correct anymore. In these cases we need to detect the anomaly and restart the process in order to find a new optimal frequency. 
+6. **Determine the optimal sampling frequency** To do so simply multy the obtained value by 2.5.
+7. **Sampling at the new found frequency** Once computed the optimal frequency take samples based on this new found frequency.
+8. **Restart if need** it's possible for certain real-world scenarios when for example the observed phenomena changes, that the previously found frequency is not correct anymore. In these cases we need to detect the anomaly and restart the process in order to find a new optimal frequency. 
 
 **Implementation**
-- **Input 1**: `2*sin(2*PI*3*t)`
-- **Input 2**: `15*sin(2*PI*2*t) + 10*sin(2*PI*3*t)`
+- **Input 1**: `2*sin(2π*3*t) + 4*sin(2π*5*t)`
+  
+   ![FFT-colab](https://github.com/user-attachments/assets/f895f12e-f4c3-4fad-beab-c2f712c5756a)
+  
+- **Input 2**: `10*sin(2*PI*2*t) + 6*sin(2*PI*9*t)`
+
+   ![FFT3-colab](https://github.com/user-attachments/assets/f76eee0f-a0b9-46ac-b284-531f89de8168)
+
 - **Initial sampling frequency**: 1KHz
-- **Results:**
-
-![OptSampl](https://github.com/user-attachments/assets/fbd8a22a-328e-493b-8013-8758ab61b851)
-
-     
-The experimental results are corrected, indeed the input signal is a sum of two sinusoid with frequency 3Hz and 5Hz. This can also be view simply by doing the Fourier traform of the function:
-
-![FFT-colab](https://github.com/user-attachments/assets/f895f12e-f4c3-4fad-beab-c2f712c5756a)
+  
+   In this experiment first we simulate the signal of a phenomena using _input 1_, compute the FFT and the optimal frequency, then after 100 samples the program induce an anomaly, consisting in the change of the sampled signal into _input 2_. The firmware will detect    this using a window of size SAMPLING_WINDOW_SIZE. Specifically if a given sample it's distant more than AMPLITUDE_THRESHOLD_STD_DEV * standard deviation of window, then an anomaly it's detected. Once an anomaly it's detected the esp32 will recompute the FFT and th     new sampling frequency. 
 
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
