@@ -167,6 +167,8 @@ In this phase, we aggregate the samples of the signal by computing an average of
 - **Sampling task:** This task will sample the signal using the optimal frequency and each sample will be added to **xQueue_samples**, a mechanism used for inter-task communication that allows tasks to send and receive data in a thread-safe manner, ensuring synchronization between tasks. This task will have the highest priority, otherwise the FreeRTOS scheduler could decide to schedule the **averaging task** and this could interfere with the chosen sampling frequency.
 - **Averaging task:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
 
+A problem that may occur is that the sampling task is faster than the average task in this case the sampling task will overwrite the oldest sample in the queue. In order to coordinate the removal of such sample from the queue i used a mutex that make the process, of checking if the queue is empty and removing the oldest object, atomic.
+
 **Results**
   
   ![aggregate_results](https://github.com/user-attachments/assets/8a2ad38d-df65-405e-b05e-cca8d6fc8401)
@@ -292,13 +294,20 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 #
 This section provides a analysis of the energy consumption of the IoT system, focusing on the impact of different transmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
 
-In both implentation there are two tasks:
+#### Over Sampling\Adaptive Sampling
 
-- A **Sampling task**, that sample the input signal using the optimal frequency calculate in the Phase 2.
-  
-- A **Average task**, that compute the agrregated values of the samples.
-  
-Both of them are executed in **parallel** by **freeRTOS** , so due to the **nondeterministic** nature of **freeRTOS scheduling** we can't precisely distinct the power consumption of each of them. However, since the esp32 won't transition to any **sleep mode** while running these tasks, the power consumption will be circa equal to the consumption of the **active state** of the board(160~260mA).
+In this part we discuss the power consumption differences between over-sampling a signal and adaptive sampling. In [max-frequency.ino](/max-frequency/max-frequency.ino) the esp32 firstly oversample the given signal using 1 KHz then after computed the optimal sample 
+rate it goes in light sleep for 2 seconds afterthat it start to sample at the new found frequency. In order to reduce the power consumption after each sample the esp32 goes in light sleep in which it consumes ~2mW whereas while sampling it consume almost 200mW.
+
+This it's visible in the following image:
+
+![FFT](https://github.com/user-attachments/assets/6fef8d8f-56ba-4978-a96e-dbf84a9c86f4)
+
+When the anomaly is detected the esp32 will perform another oversampling in order to learn the new optimal frequency. In this case it will be higher than the first one.
+
+![FFT (1)](https://github.com/user-attachments/assets/2dd7be9c-f6dd-44b6-8ae2-1a72b06ac592)
+
+**Code Reference**: [max-frequency.ino](/max-frequency/max-frequency.ino)
 
 #### LoRa transmission
 **LoRa (Long Range)** is a wireless communication technology designed for **long-range**, **low-power** Internet of Things (IoT) applications. It operates in the sub-GHz bands (e.g., 868 MHz in Europe, 915 MHz in North America). This technique allows data to be transmitted over distances of several kilometers (up to 15 km in rural areas) while consuming **minimal power**.
