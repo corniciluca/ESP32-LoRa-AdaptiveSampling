@@ -5,8 +5,6 @@
 #include "shared_defs.h"
 #include "config.h"
 
-// Configuration Constants
-#define QUEUE_RECEIVE_DELAY  5       // ms to wait for queue items
 
 // Global averages storage
 float avgs[SIZE_AVG_ARRAY] = {0};
@@ -55,40 +53,39 @@ void average_task_handler(void *pvParameters) {
   int valid_samples = 0;    // Count of initialized buffer elements
 
   while (1) {
-      if (xQueueReceive(xQueueSamples, &(value), (TickType_t)5)) {
-        
-        // Update circular buffer
-        sampleReadings[pos] = value;
-        pos = (pos + 1) % WINDOW_SIZE;
+    if (xQueueReceive(xQueueSamples, &(value), (TickType_t)portMAX_DELAY)) {
+      // Update circular buffer
+      sampleReadings[pos] = value;
+      pos = (pos + 1) % WINDOW_SIZE;
 
-        Serial.printf("[AGGREGATE] Sample read: %.2f\n",value);
+      Serial.printf("[AGGREGATE] Sample read: %.2f\n",value);
 
-        if (valid_samples < WINDOW_SIZE) valid_samples++; // Ensure we don't exceed the array size
-        // Calculate moving average
-        sum = 0;
-        for (int i = 0; i < valid_samples; i++) {
-            sum += sampleReadings[i];
-        }
-        average = sum / WINDOW_SIZE;
-
-        // Store and log results
-        if(valid_samples == WINDOW_SIZE){
-          avgs[num_of_samples] = average;
-          Serial.printf("[AGGREGATE] Window %d: %.2f\n", num_of_samples, average);
-          
-          xQueueSend(xQueueAvgs, &average, (TickType_t)portMAX_DELAY);
-
-          num_of_samples++;
-        }
-
-        if(num_of_samples >= SIZE_AVG_ARRAY){
-          Serial.print("*************\n");
-          Serial.print("Average task finished\n");
-          Serial.print("*************\n");
-          printAverages();
-          break;
-        }
+      if (valid_samples < WINDOW_SIZE) valid_samples++; // Ensure we don't exceed the array size
+      // Calculate moving average
+      sum = 0;
+      for (int i = 0; i < valid_samples; i++) {
+          sum += sampleReadings[i];
       }
+      average = sum / WINDOW_SIZE;
+
+      // Store and log results
+      if(valid_samples == WINDOW_SIZE){
+        avgs[num_of_samples] = average;
+        Serial.printf("[AGGREGATE] Window %d: %.2f\n", num_of_samples, average);
+        
+        xQueueSend(xQueueAvgs, &average, (TickType_t)0);
+
+        num_of_samples++;
+      }
+
+      // if(num_of_samples >= SIZE_AVG_ARRAY){
+      //   Serial.print("*************\n");
+      //   Serial.print("Average task finished\n");
+      //   Serial.print("*************\n");
+      //   printAverages();
+      //   break;
+      // }
+    }
   }
   vTaskDelete(NULL);
 }

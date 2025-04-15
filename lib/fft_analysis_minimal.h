@@ -14,7 +14,7 @@ extern ArduinoFFT<float> FFT;
 
 // Signal type
 typedef float (*signal_function)(float t);
-extern signal_function curr_signal;
+
 // Public API
 float signal_1(float t);
 float signal_medium_freq(float t);
@@ -25,6 +25,6 @@ float sample_signal(signal_function sig_func, int index, int sample_rate);
 void fft_init(void);
 void fft_process_signal(signal_function sig_func, int num_samples);
 float fft_get_max_frequency(void);
-void fft_perform_analysis(void);
+float fft_perform_analysis(void);
 void fft_adjust_sampling_rate(float max_freq);
 void fft_sampling_task(void *pvParameters);
