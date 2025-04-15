@@ -170,7 +170,6 @@ In this phase, we aggregate the samples of the signal by computing an average of
 - **Sampling task:** This task will sample the signal using the optimal frequency and each sample will be added to **xQueue_samples**, a mechanism used for inter-task communication that allows tasks to send and receive data in a thread-safe manner, ensuring synchronization between tasks. This task will have the highest priority, otherwise the FreeRTOS scheduler could decide to schedule the **averaging task** and this could interfere with the chosen sampling frequency.
 - **Averaging task:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do so it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
 
-A problem that may occur is that the sampling task is faster than the average task: in this case the sampling task will overwrite the oldest sample in the queue. In order to coordinate the removal of such sample from the queue i used a mutex that make the process of checking if the queue is empty and removing the oldest object atomic.
 
 **Results**
   
