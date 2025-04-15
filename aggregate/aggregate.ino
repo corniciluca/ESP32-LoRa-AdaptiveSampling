@@ -13,6 +13,7 @@
 // Global averages storage
 float averages[SIZE_AVG_ARRAY] = {0};
 
+
 /**
  * @brief Prints formatted averages list to serial output
  * @details Output format:
@@ -47,23 +48,20 @@ void print_averages() {
 void sampling_task(void *pvParameters) {
     float sample = 0.0f;
     
-    Serial.printf("[FFT] Starting sampling at %d Hz\n", g_sampling_frequency);
+    Serial.printf("[SAMPLING] Starting sampling at %d Hz\n", g_sampling_frequency);
     Serial.println("--------------------------------");
 
     for (int i = 0; i < NUM_OF_SAMPLES_AGGREGATE; i++) {
-        sample = sample_signal(signal_1, i, g_sampling_frequency);
+        sample = sample_signal(curr_signal, i, g_sampling_frequency);
         
-        if (xQueueSend(xQueueSamples, &sample, portMAX_DELAY) != pdPASS) {
-            Serial.println("[ERROR] Failed to send sample to queue");
-            continue;
-        }
+        xQueueSend(xQueueSamples, &sample, 0);
 
-        Serial.printf("[FFT] Sample %d: %.2f\n", i, sample);
+        Serial.printf("[SAMPLING] Sample %d: %.2f\n", i, sample);
         vTaskDelay(pdMS_TO_TICKS(1000/g_sampling_frequency));
     }
 
     Serial.println("--------------------------------");
-    Serial.println("[FFT] Sampling completed");
+    Serial.println("[SAMPLING] Sampling completed");
     vTaskDelete(NULL);
 }
 
@@ -90,37 +88,37 @@ void average_task(void *pvParameters) {
   int valid_samples = 0;    // Count of initialized buffer elements
 
   while (1) {
-      if (xQueueReceive(xQueueSamples, &(value), (TickType_t)5)) {
-        
-        // Update circular buffer
-        sampleReadings[pos] = value;
-        pos = (pos + 1) % WINDOW_SIZE;
+    if (xQueueReceive(xQueueSamples, &value, (TickType_t)portMAX_DELAY)) {
+      
+      // Update circular buffer
+      sampleReadings[pos] = value;
+      pos = (pos + 1) % WINDOW_SIZE;
 
-        Serial.printf("[AGGREGATE] Sample read: %.2f\n",value);
+      Serial.printf("[AGGREGATE] Sample read: %.2f\n",value);
 
-        if (valid_samples < WINDOW_SIZE) valid_samples++; // Ensure we don't exceed the array size
-        // Calculate moving average
-        sum = 0;
-        for (int i = 0; i < valid_samples; i++) {
-            sum += sampleReadings[i];
-        }
-        average = sum / WINDOW_SIZE;
-
-        // Store and log results
-        if(valid_samples == WINDOW_SIZE){
-          averages[num_of_avgs] = average;
-          Serial.printf("[AGGREGATE] Window %d: %.2f\n", num_of_avgs, average);
-          num_of_avgs++;
-        }
-        
-        if(num_of_avgs >= SIZE_AVG_ARRAY){
-          Serial.print("*************\n");
-          Serial.print("Average task finished\n");
-          Serial.print("*************\n");
-          print_averages();
-          break;
-        }
+      if (valid_samples < WINDOW_SIZE) valid_samples++; // Ensure we don't exceed the array size
+      // Calculate moving average
+      sum = 0;
+      for (int i = 0; i < valid_samples; i++) {
+          sum += sampleReadings[i];
       }
+      average = sum / WINDOW_SIZE;
+
+      // Store and log results
+      if(valid_samples == WINDOW_SIZE){
+        averages[num_of_avgs] = average;
+        Serial.printf("[AGGREGATE] Window %d: %.2f\n", num_of_avgs, average);
+        num_of_avgs++;
+      }
+      
+      if(num_of_avgs >= SIZE_AVG_ARRAY){
+        Serial.print("*************\n");
+        Serial.print("Average task finished\n");
+        Serial.print("*************\n");
+        print_averages();
+        break;
+      }
+    }
   }
   vTaskDelete(NULL);
 }
@@ -141,7 +139,7 @@ void startingTask(void *pvParameters) {
   // Queues initialization
   init_shared_queues();
 
-  xTaskCreate(sampling_task, "Acquisition", TASK_STACK_SIZE, NULL, 1, NULL);
+  xTaskCreate(sampling_task, "Acquisition", TASK_STACK_SIZE, NULL, 2, NULL);
   xTaskCreate(average_task, "Averaging", TASK_STACK_SIZE, NULL, 1, NULL);
 
   vTaskDelete(NULL);

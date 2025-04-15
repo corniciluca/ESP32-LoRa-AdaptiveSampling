@@ -22,7 +22,19 @@
  * 
  */
 void comunication_task(void *pvParameters) {
+  xCommunicationTaskHandle = xTaskGetCurrentTaskHandle();
+  
+  // Start WiFi connection
   wifi_init();
+  
+  // Wait for WiFi to be connected (notification from wifi_init)
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+  
+  Serial.println("[COMM] MQTT connected, notifying main task");
+  // Notify the starting task that WiFi is connected
+  xTaskNotifyGive((TaskHandle_t)pvParameters);
+  
+  vTaskDelete(NULL);
 }
 
 /**
@@ -42,9 +54,17 @@ void startingTask(void *pvParameters) {
   // Queues initialization
   init_shared_queues();
 
-  xTaskCreate(fft_sampling_task, "Acquisition", TASK_STACK_SIZE, NULL, 1, NULL);
+  // Create communication task, passing this task's handle
+  xTaskCreate(comunication_task, "Communication", TASK_STACK_SIZE, xTaskGetCurrentTaskHandle(), 1, NULL);
+  
+  // Wait for WiFi to be connected
+  Serial.println("[SYS] Waiting for MQTT connection...");
+  ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+  Serial.println("[SYS] MQTT connected, starting sampling and aggregation tasks");
+  
+  // Only start sampling and aggregation tasks after WiFi is connected
+  xTaskCreate(fft_sampling_task, "Acquisition", TASK_STACK_SIZE, NULL, 2, NULL);
   xTaskCreate(average_task_handler, "Averaging", TASK_STACK_SIZE, NULL, 1, NULL);
-  xTaskCreate(comunication_task, "Comunication", TASK_STACK_SIZE, NULL, 1, NULL);
 
   vTaskDelete(NULL);
 }
@@ -61,5 +81,5 @@ void setup() {
 }
 
 void loop() {
-  vTaskDelay(portMAX_DELAY);
+  vTaskDelete(NULL);
 }
