@@ -325,14 +325,14 @@ consuming 200mW/s, whereas in the second case it will take 10 samples for each s
 
 #
 #### LoRa transmission
-**LoRa (Long Range)** is a wireless communication technology designed for **long-range**, **low-power** Internet of Things (IoT) applications. It operates in the sub-GHz bands (e.g., 868 MHz in Europe, 915 MHz in North America). This technique allows data to be transmitted over distances of several kilometers (up to 15 km in rural areas) while consuming **minimal power**.
+**LoRa (Long Range)** is a wireless communication technology designed for **long-range**, **low-power** Internet of Things (IoT) applications. It operates in the sub-GHz bands (e.g., 868 MHz in Europe, 915 MHz in North America). This technology allows for data to be transmitted over distances of several kilometers (up to 15 km in rural areas) while consuming **minimal power**.
 LoRa reduce the power consumption through a series of mechanisms:
 
 - **Duty Cycle**: LoRaWAN adheres to regional regulations (e.g., 1% duty cycle in the EU). Devices transmit briefly and then sleep, minimizing active time. In this case LoRa **Class A** is used, this kind of operational class is the most energy efficent.
 - **Adaptive Data Rate (ADR)**: Dynamically adjusts spreading factor (SF) and transmission power based on network conditions.
 - **Minimal Payload Size**: The size of payload is very limited (~200 bytes), reducing transmission time and energy.
 
-While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy only to **RTC & RTC Peripherals** and **ULP Coprocessor**. Having setted the Duty Cycle to 15 seconds, the device transmits a small payload over LoRa containing the computed average (a 4-byte float) every 15 sconds. According to the LoRaWAN Regional Parameters for the EU868 band and using DR3 the estimate time-on-air is ~164.9 ms (calculated with [TTN LoRaWAN airtime calculator](https://www.thethingsnetwork.org/airtime-calculator/).
+While being in deep sleep the ESP32 will only consume ~10 µA, giving energy only to **RTC & RTC Peripherals** and **ULP Coprocessor**. Having setted the Duty Cycle to 15 seconds, the device transmits a small payload over LoRa containing the computed average (a 4-byte float) every 15 seconds. According to the LoRaWAN Regional Parameters for the EU868 band and using DR3 the estimate time-on-air is ~164.9 ms (calculated with [TTN LoRaWAN airtime calculator](https://www.thethingsnetwork.org/airtime-calculator/).
 
 A qualitative drawing of one trasmission attempt:
 
@@ -340,9 +340,9 @@ A qualitative drawing of one trasmission attempt:
 
 **Practical analysis**
 
-In this part i measured the energy consumption of the different phases and the comunication with LoRa. As it possible to see in the following imgaes, firstly we compute determine optimal frequency equal to 10Hz and start to samples. In this case we use an aggregate value based on a time-window. For this reason the size of the window and the numer of samples are equal to SECONDS_WINDOW * freq. after the esp32 compute the average it will send it through LoRaWAN, TTN and MQTT to the edge server. Once the ESP32 sned the message via LoRaWAN it will go in to deep sleep for a given period bounded by the restrictions on the duty cycle in europe( 1% duty cycle). After the device wakes up it will resample the signal without re-computing the optimal rate.
+In this part i measured the energy consumption of the different phases and the communication with LoRa. As it possible to see in the following imgaes, firstly we compute the optimal frequency equal to 10Hz and start to sample. In this case we use an aggregate value based on a time-window. For this reason the size of the window and the number of samples are equal to SECONDS_WINDOW * freq. After the esp32 computes the average it will send it through LoRaWAN, TTN and MQTT to the edge server. Once the ESP32 sends the message via LoRaWAN it will go in to deep sleep for a given period bounded by the restrictions on the duty cycle in europe( 1% duty cycle). After the device wakes up it will resample the signal without re-computing the optimal rate.
 
-How can it be seen in this image, the dewvice after initialized the LoRa moduletries to connect to an nearby gateway. So it Trasmits a message and waits the two recivings windows before retraing the connection.
+As it can be seen in this image, the device after it initialized the LoRa module it connects to an nearby gateway. So it Transmits a message and waits the two recivings windows before retraing the connection.
 
 ![FFT ,sampling aggregate](https://github.com/user-attachments/assets/34794803-c83b-4f44-968b-dc2a30ca4305)
 
@@ -358,7 +358,7 @@ How can it be seen in this image, the dewvice after initialized the LoRa modulet
 #
 #### Wi-Fi transmission
 
-In the case of Wi-Fi transmission it can be difficult to estimate accuratly the power consumption, this is due to the fact that there are three tasks (**communication_task**,**average_task**,**sampling_task**) that run simultaneously. The ... firmware wait till the esp32 connects to the MQTT broker before starting sampling, aggregate and trasmission phases. For this reason, the main tasks could be delayed, and the Wi-Fi module might attempt multiple connection retries.
+In the case of Wi-Fi transmission it can be difficult to estimate accuratly the power consumption, this is due to the fact that there are three tasks (**communication_task**,**average_task**,**sampling_task**) that run simultaneously. The ... firmware waits until the esp32 connects to the MQTT broker before starting the sampling, aggregation and trasmission phases. For this reason, the main tasks could be delayed, and the Wi-Fi module might attempt multiple connection retries.
 
 ![1° try](https://github.com/user-attachments/assets/5385131b-f10e-4478-a189-afa4baac3554)
 
@@ -375,7 +375,7 @@ In this phase we measure the Round Trip Time (RTT) between the ESP32 and the edg
 
 **Implementation**
 
-To do so we create an edge server MQTT_Client.py that connects to an MQTT broker and subscribe to a specific topic(e.g luca/esp32/data). In the ESP32 after the **Sampling_task** inserted the samples in to the xQueue_samples they will be read by **Average_task** that compute the aggregated values and add them to the xQueue_avgs. At the same time **Communication_task** read from xQueue_Avgs and send the averages to the edge server via MQTT over The Wi-Fi protocol. In order to compute the RTT each MQTT payload is made up of: ID, computed average and a timestamp. Once the edge server recived the event on the topic to which it's subscribed it will publish an ack on another topic, to which the esp32 is subscribed. Therefore, the esp32 recompute another timestamp and determine the RTT, by doing the difference between these two timestamps.
+To do so we create an edge server MQTT_Client.py that connects to an MQTT broker and subscribe to a specific topic(e.g luca/esp32/data). In the ESP32 after the **Sampling_task** inserted the samples in to the xQueue_samples they will be read by **Average_task** that computes the aggregated values and adds them to the xQueue_avgs. At the same time **Communication_task** reads from xQueue_Avgs and sends the averages to the edge server via MQTT over The Wi-Fi protocol. In order to compute the RTT each MQTT payload is made up of: ID, computed average and a timestamp. Once the edge server received the event on the topic to which it's subscribed it will publish an ack on another topic, to which the esp32 is subscribed. Therefore, the esp32 recomputes another timestamp and determines the RTT, by doing the difference between these two timestamps.
 
 - Example :
 
@@ -399,7 +399,7 @@ Another important metric to calculate it's the data volume. Measuring the data v
 
 - **Storage requirements**: Estimate the amount of disk space needed on the edge server or in the cloud to store the data generated by the device(s) over time.
   
-- **Comunication costs**: The total volume directly determines the communication cost. Higher volume means higher costs.
+- **Comunication costs**: The total volume directly determines the communication costs. Higher volume means higher costs.
   
 - **Cloud Costs**: Cloud platforms often charge based on the amount of data transferred in and out, and also for storage.
   
@@ -422,7 +422,7 @@ In this phase i computed the data volume estimating the numbers of bytes transmi
 
 
 
-As the experiment proves the volume of data when over-sampling as if we where sampling at the optimal frequency, since in the code we setted the same number of samples. Whereas the throughput is musch higher (more than double of the optimal one). This means higher costs and less scalable. 
+As the experiment proves the volume of data when over-sampling as if we where sampling at the optimal frequency, since in the code we set the same number of samples. Whereas the throughput is much higher (more than double of the optimal one). This means higher costs and less scalable. 
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
