@@ -132,9 +132,10 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 
 
 - **Schema**
-
-  ![schema_2P](https://github.com/user-attachments/assets/83a72765-aa38-41e6-973b-53ee93d940f2)
-
+   <p align="center">
+     <img src="https://github.com/user-attachments/assets/83a72765-aa38-41e6-973b-53ee93d940f2" width="80%" height="80%"/>
+   </p>
+      
   In this experiment first we simulate the signal of a phenomena using _input 1_, compute the FFT and the optimal frequency, then after 100 samples the program induce an anomaly, consisting in the change of the sampled signal into _input 2_.
 
 - **Anomaly detection**
@@ -150,10 +151,11 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
        This other approach uses the median and median absolute deviation, that are much more stable to outliers and makes less assumptionions on the distribution of the samples, making it able to effectively detect anomalies even in non-normally distributed data.
    
 - **Results**
-
-     ![Anom_1](https://github.com/user-attachments/assets/dc2437db-ce70-45de-81ed-4c8fd0d9136e)
-
-     ![Anom_2](https://github.com/user-attachments/assets/94f12953-0cd0-42bf-b9c3-69ef57347ae0)
+  <p float="left">
+     <img src="https://github.com/user-attachments/assets/dc2437db-ce70-45de-81ed-4c8fd0d9136e"/>
+     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+     <img src="https://github.com/user-attachments/assets/e26232ef-c754-4378-9525-b01833d20f4e"  />
+  </p>
 
 **Code Reference**: [sampling.ino](/sampling/sampling.ino)
 
