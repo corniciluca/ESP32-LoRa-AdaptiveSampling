@@ -412,13 +412,19 @@ In this phase i computed the data volume estimating the numbers of bytes transmi
    Volume of Data ≃ 2 * ((NUMBER_OF_AVGS * sizeof(char) * MSG_BUFFER_SIZE) + 70B + 26B)
    Data rate ≃ Size of Data / Duration of comunication
    ```
-   
-- Example
-  
-  ![volume](https://github.com/user-attachments/assets/c88ef74d-03ee-40e9-a562-74370ff37d81)
 
+   
+|   **Optimal frequency**             |  **Over-sampling**|
+|:-------------------------:|:-------------------------:|
+|![volume](https://github.com/user-attachments/assets/c88ef74d-03ee-40e9-a562-74370ff37d81)|![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf)|
+
+
+As the experiment proves the volume of data when over-sampling as if we where sampling at the optimal frequency, since in the code we setted the same number of samples. Whereas the throughput is musch higher (more than double of the optimal one). This means higher costs and less scalable. 
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
+
+#
+### Bonus
 
 
 
