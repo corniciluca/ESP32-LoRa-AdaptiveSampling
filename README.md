@@ -149,10 +149,10 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
      - **Hample filter**
    
        This other approach uses the median and median absolute deviation, that are much more stable to outliers and makes less assumptionions on the distribution of the samples, making it able to effectively detect anomalies even in non-normally distributed data.
-   
+
 - **Results**
   <p float="left">
-     <img src="https://github.com/user-attachments/assets/dc2437db-ce70-45de-81ed-4c8fd0d9136e"/>
+     <img src="https://github.com/user-attachments/assets/cb78a047-32dd-493e-a39d-7dbae4c88137" />
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
      <img src="https://github.com/user-attachments/assets/e26232ef-c754-4378-9525-b01833d20f4e"  />
   </p>
