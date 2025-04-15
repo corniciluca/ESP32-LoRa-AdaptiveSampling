@@ -143,7 +143,7 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
      
      - **Standard deviation-based method**:
      
-       The firmware will detect this using a window of size SAMPLING_WINDOW_SIZE. Specifically if a given sample it's distant more than AMPLITUDE_THRESHOLD_STD_DEV * standard deviation from the mean of the window, then an anomaly it's detected. Once an anomaly it's
+       The firmware will detect this using a window of size SAMPLING_WINDOW_SIZE. Specifically if a given sample it's distant more than THRESHOLD_STD_DEV * standard deviation from the mean of the window, then an anomaly it's detected. Once an anomaly it's
        detected the esp32 will recompute the FFT and the new sampling frequency. This approach is real simple to apply, but has some downfalls: the standard deviation is highly sensitive to extreme values (outliers), it assumes a normal distribution of the data and this is
        generally not true so it will not accurately represent the data's variability.
      
