@@ -321,6 +321,7 @@ We can also stimate the difference of power consumption between oversampling at 
 consuming 200mW/s, whereas in the second case it will take 10 samples for each second consuming 200mW * 10/1000 + 2mW* 990/100 = 3.98mW/s. this means that using the optimal frequnecy for sampling we save up to 196 mW/s.
 
 **Code Reference**: [max-frequency.ino](/max-frequency/max-frequency.ino)
+
 #
 #### LoRa transmission
 **LoRa (Long Range)** is a wireless communication technology designed for **long-range**, **low-power** Internet of Things (IoT) applications. It operates in the sub-GHz bands (e.g., 868 MHz in Europe, 915 MHz in North America). This technique allows data to be transmitted over distances of several kilometers (up to 15 km in rural areas) while consuming **minimal power**.
@@ -413,10 +414,11 @@ In this phase i computed the data volume estimating the numbers of bytes transmi
    Data rate ≃ Size of Data / Duration of comunication
    ```
 
-   
+
 |   **Optimal frequency**             |  **Over-sampling**|
 |:-------------------------:|:-------------------------:|
 |![volume](https://github.com/user-attachments/assets/c88ef74d-03ee-40e9-a562-74370ff37d81)|![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf)|
+
 
 
 As the experiment proves the volume of data when over-sampling as if we where sampling at the optimal frequency, since in the code we setted the same number of samples. Whereas the throughput is musch higher (more than double of the optimal one). This means higher costs and less scalable. 
@@ -426,7 +428,39 @@ As the experiment proves the volume of data when over-sampling as if we where sa
 #
 ### Bonus
 
+**Base line**
 
+   |   **Power consumption**             |  **Volume of data / data rate**| **RTT** |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+| 200mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
+
+**Low-Frequency Signal**
+
+   Signal(t): 5⋅sin(2π⋅10⋅t)
+
+   |   **Power consumption**             |  **Volume of data / data rate**| **RTT** |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+| 200mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
+
+**Medium-Frequency Signal**
+
+   Signal(t): 5⋅sin(2π⋅10⋅t)
+
+   |   **Power consumption**             |  **Volume of data / data rate**| **RTT** |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+| 200mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
+
+**High-Frequency Signal**
+
+   Signal(t): 5⋅sin(2π⋅10⋅t)
+
+   |   **Power consumption**             |  **Volume of data / data rate**| **RTT** |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+| 200mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
+
+
+**Conclusions**
+   Adaptive sampling adds complexity and FFT processing overhead but can offer substantial savings when the signal characteristics allow for it. Fixed over-sampling is simpler but potentially wasteful.
 
 ---
 
