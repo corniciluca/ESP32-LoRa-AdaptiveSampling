@@ -83,7 +83,7 @@ Choosing between higher or lower sampling frequencies involves critical engineer
        
      - **Drawbacks**: Risk of aliasing, ISI, and loss of high-frequency details.
 
-To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained levegering, the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2 * $\f_max$, eventhough a common engineering practice is to pick $\f_sample$ = 2.5 * $\f_max$ for safety margins.
+To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained levegering, the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2 * $f_{max}$, eventhough a common engineering practice is to pick $𝑓_{sample}$ = 2.5 * $𝑓_{max}$ for safety margins.
 
 **Program steps**
 1. **Sample at maximum frequency possible for the ESP32**:
