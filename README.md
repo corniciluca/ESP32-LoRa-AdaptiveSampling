@@ -346,7 +346,13 @@ How can it be seen in this image, the dewvice after initialized the LoRa modulet
 #
 #### Wi-Fi transmission
 
-In the case of Wi-Fi transmission it can be difficult to estimate accuratly the power consumption, this is due to the fact that there is another task called **communication_task** that reads the averages calculated by the **average_task**. As a result, the exact timing of when the ESP32 activates its Wi-Fi module to transmit data via MQTT is inherently non-deterministic.
+In the case of Wi-Fi transmission it can be difficult to estimate accuratly the power consumption, this is due to the fact that there are three tasks (**communication_task**,**average_task**,**sampling_task**) that run simultaneously. The ... firmware wait till the esp32 connects to the MQTT broker before starting sampling, aggregate and trasmission phases. For this reason, the main tasks could be delayed, and the Wi-Fi module might attempt multiple connection retries.
+
+![1° try](https://github.com/user-attachments/assets/5385131b-f10e-4478-a189-afa4baac3554)
+
+Once connected, it will start the previously mentioned phases. As shown, the ESP32, by default, uses a power-saving approach, entering modem-sleep mode after each transmission or reception, and it will wait until the DTIM (Delivery Traffic Indication Message) interval communicated by the access point during the connection phase.
+
+![Wifi init](https://github.com/user-attachments/assets/882bb857-d2cd-4ce5-8cd7-ae3b6054e76c)
 
 ---
 
@@ -361,7 +367,7 @@ To do so we create an edge server MQTT_Client.py that connects to an MQTT broker
 
 - Example :
 
-     ![RTT](https://github.com/user-attachments/assets/775c6cc5-3570-4e4c-b880-323d3c0fe3f5)
+   ![RTT](https://github.com/user-attachments/assets/aa74d6e5-be50-4600-8ebc-78083831587b)
 
 By the mean and deviation standard we can infer :
 
@@ -388,7 +394,7 @@ Another important metric to calculate it's the data volume. In this phase i comp
 
 - Example
   
-  ![Volume_val](https://github.com/user-attachments/assets/71985b13-32af-4ba9-a3e0-60b834ccc697)
+  ![volume](https://github.com/user-attachments/assets/c88ef74d-03ee-40e9-a562-74370ff37d81)
 
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
