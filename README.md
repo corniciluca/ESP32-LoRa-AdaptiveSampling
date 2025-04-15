@@ -428,7 +428,7 @@ As the experiment proves the volume of data when over-sampling as if we where sa
 #
 ### Bonus
 
-**Base line**
+**Oversampling(Base line)**
 
    |   **Power consumption**             |  **Volume of data / data rate**| **RTT** |
 |:-------------------------:|:-------------------------:|:-------------------------:|
@@ -436,25 +436,56 @@ As the experiment proves the volume of data when over-sampling as if we where sa
 
 **Low-Frequency Signal**
 
-   Signal(t): 5⋅sin(2π⋅10⋅t)
-
-   |   **Power consumption**             |  **Volume of data / data rate**| **RTT** |
+   Signal(t): 2*sin(2*PI*3*t) + 4*sin(2*PI*5*t)
+   
+   Adaptive Sampling (10Hz): 
+   
+      - **Active time**: 10 samples/second * 1ms/sample = 10ms active time
+      
+      - **Light sleep**: 990ms idle time
+      
+      - **Power**: (200mW * 10ms/1000ms) + (2mW * 990ms/1000ms) = 2mW + 1.98mW = 3.98mW/s
+   
+      **Power Savings**: 200mW/s - 3.98mW/s = 196.02mW/s
+   
+   |   **Power savings**             |  **Volume of data / data rate**| **RTT** |
 |:-------------------------:|:-------------------------:|:-------------------------:|
-| 200mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
+| 196.02mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
 
 **Medium-Frequency Signal**
 
-   Signal(t): 5⋅sin(2π⋅10⋅t)
+   Signal(t): 8⋅sin(2π⋅100⋅t)+3⋅sin(2π⋅150⋅t)
 
-   |   **Power consumption**             |  **Volume of data / data rate**| **RTT** |
+   Adaptive Sampling (375Hz): 
+   
+      - **Active time**: 375 samples/second * 1ms/sample = 375ms active time
+      
+      - **Light sleep**: 625ms idle time
+      
+      - **Power**: (200mW * 375ms/1000ms) + (2mW * 625ms/1000ms) = 75mW + 1.25mW = 76.25mW/s
+   
+      **Power Savings**: 200mW/s - 76.25mW/s = 123.75mW/s
+
+   |   **Power savings**             |  **Volume of data / data rate**| **RTT** |
 |:-------------------------:|:-------------------------:|:-------------------------:|
-| 200mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
+| 123.75mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
 
 **High-Frequency Signal**
 
-   Signal(t): 5⋅sin(2π⋅10⋅t)
+   Signal(t): 4⋅sin(2π⋅350⋅t)+2⋅sin(2π⋅300⋅t)
 
-   |   **Power consumption**             |  **Volume of data / data rate**| **RTT** |
+   Adaptive Sampling (872Hz): 
+   
+      - **Active time**: 872 samples/second * 1ms/sample = 872ms active time
+      
+      - **Light sleep**: 125ms idle time
+      
+      - **Power**: (200mW * 872ms/1000ms) + (2mW * 125ms/1000ms) = 175mW + 0.25mW = 175.25mW/s
+   
+      **Power Savings**: 200mW/s - 175.25mW/s = 24,75mW/s
+      
+
+   |   **Power savings**             |  **Volume of data / data rate**| **RTT** |
 |:-------------------------:|:-------------------------:|:-------------------------:|
 | 200mW/s  | ![Volume_over](https://github.com/user-attachments/assets/6a3de787-40f8-4577-840a-14b392177baf) | ![RTT_over](https://github.com/user-attachments/assets/adef6c81-8dd3-4a6e-96e7-ecb75a3d7acb)|
 
