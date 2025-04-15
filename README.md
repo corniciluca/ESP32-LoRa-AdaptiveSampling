@@ -206,11 +206,11 @@ In this phase we comunicate with an edge server thorugh the **MQTT** a lightweig
 
 #
 #### Phase 5: LoRaWAN Uplink to The Things Network (TTN) and MQTT Transmission
-In this phase, after computed the **rolling average**, instead of sending it to an edge server via **MQTT** + **Wi-Fi**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will transmit the values computed in Phase 3 over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
+In this phase, the esp32 compute the average over a certain number of seconds and instead of sending it to an edge server via **MQTT** + **Wi-Fi**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will transmit the values computed over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
 
 **General approach**
 
-The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device authentication and network joining. OTAA is a more secure and flexible method compared to **ABP (Activation By Personalization)**  allows devices to rejoin the network after a reset or power cycle. The **payload** is composed by a single **float** value, thata reppresent the average computed by the **ESP32** device. The float occupy **4 bytes**, also the esp32 uses the **little-endian** representation of floats, this has to be taken into account when receving the payload. Before trying to establish a connection is fundamental to:
+The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device authentication and network joining. OTAA is a more secure and flexible method compared to **ABP (Activation By Personalization)**  allows devices to rejoin the network after a reset or power cycle. The **payload** is composed by a single **float** value, thaa represent the average computed by the **ESP32** device. The float occupy **4 bytes**, also the esp32 uses the **little-endian** representation of floats, this has to be taken into account when receving the payload. Before trying to establish a connection is fundamental to:
 * Set the **LoRaWAN** region(e.g. REGION_EU868)
 * Store **DevEUI** - A unique device identifier (like a MAC address). 
 * Store **AppEUI** - Identifies the application/provider (similar to a network ID). 
@@ -330,13 +330,13 @@ LoRa reduce the power consumption through a series of mechanisms:
 
 - **Duty Cycle**: LoRaWAN adheres to regional regulations (e.g., 1% duty cycle in the EU). Devices transmit briefly and then sleep, minimizing active time. In this case LoRa **Class A** is used, this kind of operational class is the most energy efficent.
 - **Adaptive Data Rate (ADR)**: Dynamically adjusts spreading factor (SF) and transmission power based on network conditions.
-- **Minimal Payload Size**: The size of payload is very limited (~200 bytes), , reducing transmission time and energy.
+- **Minimal Payload Size**: The size of payload is very limited (~200 bytes), reducing transmission time and energy.
 
-While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy only to **RTC & RTC Peripherals** and **ULP Coprocessor**. Having setted the Duty Cycle to 15 seconds, the device transmits a small payload over LoRa containing the computed rolling average (a 4-byte float) every 15 sconds. According to the LoRaWAN Regional Parameters for the EU868 band and using DR3 the estimate time-on-air is ~160 ms (calculated with [TTN LoRaWAN airtime calculator](https://www.thethingsnetwork.org/airtime-calculator/). We also have to take into account the **vTaskDelay** in the code for this reason the total active time will be 260ms.
+While being in deep sleep the ESP32 will only consume ~10 µA, giveing energy only to **RTC & RTC Peripherals** and **ULP Coprocessor**. Having setted the Duty Cycle to 15 seconds, the device transmits a small payload over LoRa containing the computed average (a 4-byte float) every 15 sconds. According to the LoRaWAN Regional Parameters for the EU868 band and using DR3 the estimate time-on-air is ~164.9 ms (calculated with [TTN LoRaWAN airtime calculator](https://www.thethingsnetwork.org/airtime-calculator/).
 
- A qualitative evaluation of the duty cycle is the following:
+A qualitative drawing of one trasmission attempt:
 
-![LORA_dutycycle](https://github.com/user-attachments/assets/a0bb145d-cd40-48a1-8b77-db1ef1cfbd3d)
+![Tx](https://github.com/user-attachments/assets/5d7316ab-74b0-47b3-8b84-2a884ff4f275)
 
 **Practical analysis**
 
