@@ -185,6 +185,10 @@ In this phase we comunicate with an edge server thorugh the **MQTT** a lightweig
 - **Publisher:** The IoT device publishing sensor data (e.g., average) to a specific MQTT topic (e.g., `esp32/data`)
 - **Subscriber:** The edge server subscribing to relevant topics to receive and process incoming data. In this case the edge server will also reply on the topic `esp32/data/acks`. 
 
+**Diagram of tasks**
+
+![Tasks diagram](https://github.com/user-attachments/assets/11d35d38-1605-4d2f-ab70-272228607f1c)
+
 **Results**
 - **Heltec ESP32:**
 
@@ -209,7 +213,11 @@ The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device aut
 * Load the **payload**
 * Specify the **appPort**
 
+
 **Details of implementation**
+
+![lora diagram1](https://github.com/user-attachments/assets/5dd254b4-f82d-416f-84f9-f489749005ea)
+
 
 In this project we have used **LoRaWAN Class A** which is the default and most **energy-efficient** LoRaWAN device class, optimized for battery-powered IoT devices. This class has an extremely **low power** consumption due to the fact between the transmitting of uplink messages it will **sleep**. It's important to notice that once the esp32 wakes up from the sleep state, it will be **restared** and the values stored in the normal variables will be lost. To prevent this from appening, it's possible to save some data in **RTC registers**, registers that wont be wiped once the esp32 wakes up for the sleep state.
 Using the key word **RTC_DATA_ATTR** will create a variable inside the **RTC** registers
@@ -218,15 +226,13 @@ Using the key word **RTC_DATA_ATTR** will create a variable inside the **RTC** r
   
   ```
      /* Persistent State --------------------------------------------------------- */
-     // RTC-retained variables (survive deep sleep)
-     RTC_DATA_ATTR int sample_i = 0;        // Sample index counter
-     RTC_DATA_ATTR int freq = INIT_SAMPLE_RATE; // Current sampling frequency
-     RTC_DATA_ATTR bool initialized = false;// Initialization flag
-     RTC_DATA_ATTR int w_pos = 0;           // Circular buffer position
-     RTC_DATA_ATTR int w_count = 0;         // Valid samples counter
-     RTC_DATA_ATTR float sampleReadings[WINDOW_SIZE] = {0}; // Sample buffer
-     
+      // RTC-retained variables (survive deep sleep)
+      RTC_DATA_ATTR int sample_i = 0;        // Sample index counter
+      RTC_DATA_ATTR int freq = INIT_SAMPLE_RATE; // Current sampling frequency
+      RTC_DATA_ATTR bool initialized = false;// Initialization flag
+      RTC_DATA_ATTR int num_of_restarts = 0; // number of restarts
   ```
+
 
 **The Things Network (TTN)**
 
