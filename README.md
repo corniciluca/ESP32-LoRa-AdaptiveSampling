@@ -361,7 +361,16 @@ To do so we create an edge server MQTT_Client.py that connects to an MQTT broker
 
 - Example :
 
-     ![RTT_val](https://github.com/user-attachments/assets/b6f90cfe-04c4-4c5f-a201-c09a0fd08d56)
+     ![RTT](https://github.com/user-attachments/assets/775c6cc5-3570-4e4c-b880-323d3c0fe3f5)
+
+By the mean and deviation standard we can infer :
+
+- **Responsiveness**: A lower mean RTT indicates better responsiveness.
+
+- **Baseline**: The mean can also be used as a baseline to detect possible network issues.
+
+- **Stability**: The standard deviation rapresents the average deviation of an RTT form the mean. So it rapresents the variability of it. An high std suggest that RTT fluctuates significantly, which can lead to inconsistent performance, whereas a low standard deviation suggests a stable network connection with consistent latency.
+
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
 
