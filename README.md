@@ -358,7 +358,8 @@ As it can be seen in this image, the device after it initialized the LoRa module
 #
 #### Wi-Fi transmission
 
-In the case of Wi-Fi transmission it can be difficult to estimate accuratly the power consumption, this is due to the fact that there are three tasks (**communication_task**,**average_task**,**sampling_task**) that run simultaneously. The ... firmware waits until the esp32 connects to the MQTT broker before starting the sampling, aggregation and trasmission phases. For this reason, the main tasks could be delayed, and the Wi-Fi module might attempt multiple connection retries.
+In the case of Wi-Fi transmission it can be difficult to estimate accuratly the power consumption, this is due to the fact that there are three tasks (**communication_task**,**average_task**,**sampling_task**) that run simultaneously. The [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
+ firmware waits until the esp32 connects to the MQTT broker before starting the sampling, aggregation and trasmission phases. For this reason, the main tasks could be delayed, and the Wi-Fi module might attempt multiple connection retries.
 
 ![1° try](https://github.com/user-attachments/assets/5385131b-f10e-4478-a189-afa4baac3554)
 
