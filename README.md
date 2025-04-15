@@ -492,6 +492,7 @@ As the experiment proves the volume of data when over-sampling as if we where sa
 
 
 **Conclusions**
+
 As it possible to see the power savings decrease if the optimal frequency is closer to the maximal frequency and the throughtput differences of the system between over-sampling and adaptive sampling do the same. 
 Adaptive sampling adds complexity and FFT processing overhead but can offer substantial savings when the signal characteristics allow for it. Fixed over-sampling is simpler but potentially wasteful.
 
