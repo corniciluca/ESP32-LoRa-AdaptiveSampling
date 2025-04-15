@@ -34,14 +34,14 @@ For instance:
 
 3. **Computes local aggregates :** calculates aggregates of the sampled signal over a windows (e.g., data-driven sliding window).  
 4. **Transmits data** via:  
-   - **Wi-Fi/MQTT :** transmits aggregate values to a nearby edge server in real-time using the lightweight MQTT protocol over Wi-Fi, enabling low-latency monitoring and rapid response.  
+   - **Wi-Fi/MQTT :** transmits aggregate values to a nearby edge server in real-time using the lightweight MQTT protocol over Wi-Fi.  
    - **LoRaWAN + TTN + MQTT :** sends aggregate values to a edge server via LoRaWAN and The Things Network (TTN), leveraging TTN’s MQTT integration.  
 ---
 ## Detailed Phase Breakdown
 
 ### Phase 1: Determine Maximum Sampling Frequency of Heltec ESP32 Wi-Fi LoRa V3
 
-In this phase, we determine the maximum sampling frequency at which our type of ESP32 can operate. This frequency is greatly influenced by how we acquire the signal that has to be sampled. For instance, if we capture the signal using a UART, the maximum sampling frequency will be limited by the baud rate of the UART connection. In our case, the signal is generate locally in the firmware and internally sampled, this means that the maximum sampling frequency is limited by the minimum delay between two sample. Which it's bounded by the period of freeRTOS's ticks, defined by the OS as
+In this phase, we determine the maximum sampling frequency at which our type of ESP32 can operate. This frequency is greatly influenced by how we acquire the signal that has to be sampled. For instance, if we capture the signal using a UART, the maximum sampling frequency will be limited by the baud rate of the UART connection. In our case, the signal is generated locally in the firmware and internally sampled, this means that the maximum sampling frequency is limited by the minimum delay between two sample. Which it's bounded by the period of freeRTOS's ticks, defined by the OS as
 ```
 portTICK_PERIOD_MS = 1 / configTICK_RATE_HZ = 1 / 1000 = 1 ms
 ```
@@ -50,7 +50,7 @@ So we get that the frequency is 1000Hz, specially if we assume that:
 * The sampling task has the highest priority.
 * The sampling code itself adds negligible runtime overhead.
 
-configTICK_RATE_HZ is a configuration constant that measure the frequency of the RTOS tick interrupt. Therefore a higher tick frequency means time can be measured to a higher resolution. However, it is not reccomended to use higher frequencies, since the RTOS kernel will use more CPU time so be less efficient. Moreover, a high tick rate will also reduce the 'time slice' given to each task. For these reasons in this project configTICK_RATE_HZ is setted to 1000.
+configTICK_RATE_HZ is a configuration constant that measure the frequency of the RTOS tick interrupt. Therefore a higher tick frequency means time can be measured to a higher resolution. However, it is not reccomended to use higher frequencies, since the RTOS kernel will use more CPU time so it would be less efficient. Moreover, a high tick rate will also reduce the 'time slice' given to each task. For these reasons in this project configTICK_RATE_HZ is set to 1000.
 
 #### Implementation
 
@@ -83,13 +83,13 @@ Choosing between higher or lower sampling frequencies involves critical engineer
        
      - **Drawbacks**: Risk of aliasing, ISI, and loss of high-frequency details.
 
-To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained levegering, the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2 * $f_{max}$, eventhough a common engineering practice is to pick $𝑓_{sample}$ = 2.5 * $𝑓_{max}$ for safety margins.
+To resolve these trade-offs, this phase focuses on computing the **optimal sampling frequency** that balances efficiency and signal integrity. The so called frequency is obtained leveraging the highest frequency of the signal and the Shannon-Nyquist theorem, to determine an efficient sampling rate capable of reconstructing the signal without aliasing or Inter-Symbol Interference (ISI). Specifically, the sampling theorem states that it's possible to reconstruct a continue signal by performing a sampling with a frequency higher that 2 * $f_{max}$, even though a common engineering practice is to pick $𝑓_{sample}$ = 2.5 * $𝑓_{max}$ for safety margins.
 
 **Program steps**
 1. **Sample at maximum frequency possible for the ESP32**:
           Given the maximum possible sample rate we sample the signal. This has the goal to correctly characterize the input signal.
 2. **Compute FFT and apply window**:
-        Calculate the frequency domain signal by apply a optimazed algoritm (Fast Fourier Trasform) that compute the Fourier Trasfomant of the signal. Then applies a Hamming window function to reduce the spectral leakage of the signal.
+        Calculate the frequency domain signal by applying an optimazed algorithm (Fast Fourier Trasform) that computes the Fourier Trasfomant of the signal. Then apply a Hamming window function to reduce the spectral leakage of the signal.
 4. **Compute the max frequency of the signal**:
      This has been done using the arduinoFFT library to compute the magnitude values of the signal. Given then the magnitude of each frequency we can infer what is the maximum one by finding each peak and choicing the one with highest frequency.
 
@@ -110,12 +110,12 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
       }
      return maxFrequency;
    ```
-   For the implementation i considered only the first half of g_samples_real since arduinoFFT store the computed magnitutes in this place.
+   For the implementation I considered only the first half of g_samples_real since arduinoFFT stores the computed magnitutes in this place.
    Moreover, in this case it's important to adjust the correct noise floor level.
    
 6. **Determine the optimal sampling frequency** To do so simply multy the obtained value by 2.5.
 7. **Sampling at the new found frequency** Once computed the optimal frequency take samples based on this new found frequency.
-8. **Restart if need** it's possible for certain real-world scenarios when for example the observed phenomena changes, that the previously found frequency is not correct anymore. In these cases we need to detect the anomaly and restart the process in order to find a new optimal frequency. 
+8. **Restart if need** It's possible for certain real-world scenarios, when for example the observed phenomena changes, that the previously found frequency is not correct anymore. In these cases we need to detect the anomaly and restart the process in order to find a new optimal frequency. 
 
 #
 
@@ -132,24 +132,24 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 
 
 
-- **Schema**
+- **Diagram**
    <p align="center">
      <img src="https://github.com/user-attachments/assets/83a72765-aa38-41e6-973b-53ee93d940f2" width="80%" height="80%"/>
    </p>
       
-  In this experiment first we simulate the signal of a phenomena using _input 1_, compute the FFT and the optimal frequency, then after 100 samples the program induce an anomaly, consisting in the change of the sampled signal into _input 2_.
+  In this experiment first we simulate the signal of a phenomena using _input 1_, compute the FFT and the optimal frequency, then after 100 samples the program induces an anomaly, consisting in the change of the sampled signal into _input 2_.
 
 - **Anomaly detection**
      
      - **Standard deviation-based method**:
      
        The firmware will detect this using a window of size SAMPLING_WINDOW_SIZE. Specifically if a given sample it's distant more than AMPLITUDE_THRESHOLD_STD_DEV * standard deviation from the mean of the window, then an anomaly it's detected. Once an anomaly it's
-       detected the esp32 will recompute the FFT and the new sampling frequency. This approach is real simple to apply, but has some downfalls: the standard deviation is highly sensitive to extreme values (outliers), assumes a normal distribution of the data nthis is
+       detected the esp32 will recompute the FFT and the new sampling frequency. This approach is real simple to apply, but has some downfalls: the standard deviation is highly sensitive to extreme values (outliers), it assumes a normal distribution of the data and this is
        generally not true so it will not accurately represent the data's variability.
      
      - **Hample filter**
    
-       This other approach uses the median and median absolute deviation, that are much more stable to outliers and makes less assumptionions on the distribution of the samples, making it able to effectively detect anomalies even in non-normally distributed data.
+       This other approach uses the median and median absolute deviation, that are much more stable to outliers and makes less assumptions on the distribution of the samples, making it able to effectively detect anomalies even in non-normally distributed data.
 
 - **Results**
   <p float="left">
@@ -168,9 +168,9 @@ In this phase, we aggregate the samples of the signal by computing an average of
 **Implementation:**
 
 - **Sampling task:** This task will sample the signal using the optimal frequency and each sample will be added to **xQueue_samples**, a mechanism used for inter-task communication that allows tasks to send and receive data in a thread-safe manner, ensuring synchronization between tasks. This task will have the highest priority, otherwise the FreeRTOS scheduler could decide to schedule the **averaging task** and this could interfere with the chosen sampling frequency.
-- **Averaging task:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
+- **Averaging task:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do so it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
 
-A problem that may occur is that the sampling task is faster than the average task in this case the sampling task will overwrite the oldest sample in the queue. In order to coordinate the removal of such sample from the queue i used a mutex that make the process, of checking if the queue is empty and removing the oldest object, atomic.
+A problem that may occur is that the sampling task is faster than the average task: in this case the sampling task will overwrite the oldest sample in the queue. In order to coordinate the removal of such sample from the queue i used a mutex that make the process of checking if the queue is empty and removing the oldest object atomic.
 
 **Results**
   
@@ -181,10 +181,10 @@ A problem that may occur is that the sampling task is faster than the average ta
 
 ### Phase 4: MQTT Transmission to an Edge Server over Wi-Fi
 
-In this phase we comunicate with an edge server thorugh the **MQTT** a lightweight publish-subscribe messaging protocol designed for resource-constrained IoT devices and low-bandwidth networks. The goal is to securely and efficiently transmit the **rolling average** windows from the device to the edge server over a Wi-Fi connection.
+In this phase we comunicate with an edge server thorugh the **MQTT**, a lightweight publish-subscribe messaging protocol designed for resource-constrained IoT devices and low-bandwidth networks. The goal is to securely and efficiently transmit the **rolling average** windows from the device to the edge server over a Wi-Fi connection.
 
 **Key Components for MQTT**
-- **MQTT Broker:** A centralized server (e.g., Mosquitto or cloud-based brokers like AWS IoT Core) that manages message routing between publishers (devices) and subscribers (edge servers).
+- **MQTT Broker:** A centralized server (e.g., Mosquitto or cloud-based brokers like AWS IoT Core) that manages messages routing between publishers (devices) and subscribers (edge servers).
 - **Publisher:** The IoT device publishing sensor data (e.g., average) to a specific MQTT topic (e.g., `esp32/data`)
 - **Subscriber:** The edge server subscribing to relevant topics to receive and process incoming data. In this case the edge server will also reply on the topic `esp32/data/acks`. 
 
@@ -206,11 +206,11 @@ In this phase we comunicate with an edge server thorugh the **MQTT** a lightweig
 
 #
 #### Phase 5: LoRaWAN Uplink to The Things Network (TTN) and MQTT Transmission
-In this phase, the esp32 compute the average over a certain number of seconds and instead of sending it to an edge server via **MQTT** + **Wi-Fi**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will transmit the values computed over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
+In this phase, the esp32 computes the average over a certain number of seconds and instead of sending it to an edge server via **MQTT** + **Wi-Fi**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will transmit the values computed over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
 
 **General approach**
 
-The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device authentication and network joining. OTAA is a more secure and flexible method compared to **ABP (Activation By Personalization)**  allows devices to rejoin the network after a reset or power cycle. The **payload** is composed by a single **float** value, thaa represent the average computed by the **ESP32** device. The float occupy **4 bytes**, also the esp32 uses the **little-endian** representation of floats, this has to be taken into account when receving the payload. Before trying to establish a connection is fundamental to:
+The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device authentication and network joining. OTAA is a more secure and flexible method compared to **ABP (Activation By Personalization)**, as it  allows devices to rejoin the network after a reset or power cycle. The **payload** is composed by a single **float** value, that represents the average computed by the **ESP32** device. The float occupies **4 bytes**, also the esp32 uses the **little-endian** representation of floats, this has to be taken into account when receving the payload. Before trying to establish a connection is fundamental to:
 * Set the **LoRaWAN** region(e.g. REGION_EU868)
 * Store **DevEUI** - A unique device identifier (like a MAC address). 
 * Store **AppEUI** - Identifies the application/provider (similar to a network ID). 
@@ -224,7 +224,7 @@ The LoRa Transmission will use **OTAA (Over-The-Air Activation)** for device aut
 ![lora diagram1](https://github.com/user-attachments/assets/5dd254b4-f82d-416f-84f9-f489749005ea)
 
 
-In this project we have used **LoRaWAN Class A** which is the default and most **energy-efficient** LoRaWAN device class, optimized for battery-powered IoT devices. This class has an extremely **low power** consumption due to the fact between the transmitting of uplink messages it will **sleep**. It's important to notice that once the esp32 wakes up from the sleep state, it will be **restared** and the values stored in the normal variables will be lost. To prevent this from appening, it's possible to save some data in **RTC registers**, registers that wont be wiped once the esp32 wakes up for the sleep state.
+In this project we have used **LoRaWAN Class A** which is the default and most **energy-efficient** LoRaWAN device class, optimized for battery-powered IoT devices. This class has an extremely **low power** consumption due to the fact that between the transmitting of uplink messages it will **sleep**. It's important to notice that once the esp32 wakes up from the sleep state, it will be **restared** and the values stored in the normal variables will be lost. To prevent this from appening, it's possible to save some data in **RTC registers**, registers that wont be wiped once the esp32 wakes up for the sleep state.
 Using the key word **RTC_DATA_ATTR** will create a variable inside the **RTC** registers
 
 * Example:
@@ -255,7 +255,7 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 
 3. **Configure Payload Decoder**
 
-     Since the payload recived by TTN will contains only bytes we need to convert them in some meangingfull information. Based on the fact that ESP32 transmit float of 4 bytes and with **little-endian** rappresentation as simple payload decoder could be the following:
+     Since the payload recived by TTN will contains only bytes we need to convert them in some meangingful information. Based on the fact that ESP32 transmits floats of 4 bytes and with **little-endian** representation a simple payload decoder could be the following:
      
      
           function bytesToFloat(bytes, isLittleEndian = true) {
@@ -293,7 +293,7 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 
 4. **Retransmit via MQTT**
 
-   transmit the payload to the edge server via MQTT. To do so i implemented an MQTT Client on the edge server.
+   Transmit the payload to the edge server via MQTT. To do so I implemented an MQTT Client on the edge server.
 
    ![MQTT_LORA](https://github.com/user-attachments/assets/000c95c5-b156-4ea2-aeaa-715b404f3872)
 
@@ -303,12 +303,12 @@ The Things Network (TTN) is an open, community-driven, and decentralized LoRaWAN
 ---
 ### Energy consumption
 
-This section provides a analysis of the energy consumption of the IoT system, focusing on the impact of different transmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
+This section provides an analysis of the energy consumption of the IoT system, focusing on the impact of different transmission strategies. Energy efficiency is critical for battery-powered IoT devices, and this part quantifies savings achieved through optimized communication protocols.
 #
 #### Over Sampling\Adaptive Sampling
 
-In this part we discuss the power consumption differences between over-sampling a signal and adaptive sampling. In [max-frequency.ino](/max-frequency/max-frequency.ino) the esp32 firstly oversample the given signal using 1 KHz then after computed the optimal sample 
-rate it goes in light sleep for 2 seconds afterthat it start to sample at the new found frequency. In order to reduce the power consumption after each sample the esp32 goes in light sleep in which it consumes ~2mW whereas while sampling it consume almost 200mW.
+In this part we discuss the power consumption differences between over-sampling a signal and adaptive sampling. In [max-frequency.ino](/max-frequency/max-frequency.ino) the esp32 firstly oversamples the given signal using 1 KHz then after it computed the optimal sample 
+rate it goes in light sleep for 2 seconds, after that it start to sample at the new found frequency. In order to reduce the power consumption after each sample the esp32 goes in light sleep in which it consumes ~2mW whereas while sampling it consume almost 200mW.
 
 This it's visible in the following image:
 
