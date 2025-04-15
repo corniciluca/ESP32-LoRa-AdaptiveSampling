@@ -192,15 +192,17 @@ In this phase we comunicate with an edge server thorugh the **MQTT** a lightweig
 ![Tasks diagram](https://github.com/user-attachments/assets/11d35d38-1605-4d2f-ab70-272228607f1c)
 
 **Results**
-- **Heltec ESP32:**
 
-  ![transimission_mqtt_results](https://github.com/user-attachments/assets/81cab811-99a4-428d-8345-20a54ea1df2f)
-   
-- **Edge server:**
-  
-  ![transimission_mqtt_edge_server_results](https://github.com/user-attachments/assets/7b8930fc-8173-49ca-9059-572931b121d3)
+
+
+|   **Heltec ESP32**             |  **Edge server**|
+|:-------------------------:|:-------------------------:|
+|  ![transimission_mqtt_results](https://github.com/user-attachments/assets/81cab811-99a4-428d-8345-20a54ea1df2f)  |    ![transimission_mqtt_edge_server_results](https://github.com/user-attachments/assets/7b8930fc-8173-49ca-9059-572931b121d3)|
+
+
 
 **Code Reference**: [transmission_mqtt.ino](/transmission/transmission_mqtt/transmission_mqtt.ino)
+
 #
 #### Phase 5: LoRaWAN Uplink to The Things Network (TTN) and MQTT Transmission
 In this phase, after computed the **rolling average**, instead of sending it to an edge server via **MQTT** + **Wi-Fi**, we will send it to the edge server via **LoRaWAN** + **MQTT**. Therefore, the device will transmit the values computed in Phase 3 over **LoRaWAN** to **The Things Network (TTN)** and they will be recived by the edge server thanks to **MQTT** protocol.
