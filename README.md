@@ -12,7 +12,7 @@
    - [Phase 3: Compute Aggregates Values](#phase-3-compute-aggregates-values)
    - [Phase 4: MQTT Transmission to an Edge Server over Wi-Fi](#phase-4-mqtt-transmission-to-an-edge-server-over-wi-fi)
    - [Phase 5: LoRaWAN Uplink to The Things Network (TTN) and MQTT Transmission](#phase-5-lorawan-uplink-to-the-things-network-ttn-and-mqtt-transmission)
-3. [Energy Consumption](#energy-consumption)
+   - [Energy Consumption](#energy-consumption)
    - [End-to-End Latency](#end-to-end-latency)
    - [Data Volume](#data-volume)
 4. [Setup](#setup)
