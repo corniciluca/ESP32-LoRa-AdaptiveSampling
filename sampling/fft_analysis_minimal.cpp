@@ -1,13 +1,16 @@
-#include "fft_analysis.h"
+#include <cmath>
+#include "fft_analysis_minimal.h"
 #include <Arduino.h>
 #include <arduinoFFT.h>
 #include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "config.h"
-#include "shared_defs.h"
-#define NOISE_THRESHOLD 8
+#include "driver/uart.h"
+#include "esp_sleep.h"
+#include "esp_log.h"
+#include "esp_timer.h"
 
+#define NOISE_THRESHOLD  8
 
 /// @brief Real component buffer for FFT input
 float g_samples_real[NUM_SAMPLES] = {0};
@@ -19,14 +22,8 @@ float g_samples_imag[NUM_SAMPLES] = {0};
 int g_sampling_frequency = INIT_SAMPLE_RATE;
 
 /// @brief ArduionFFT instance configured with buffers
-ArduinoFFT<float> FFT = ArduinoFFT<float>(
-    g_samples_real, 
-    g_samples_imag, 
-    NUM_SAMPLES, 
-    g_sampling_frequency
-);
 
-signal_function curr_signal = signal_low_freq;
+
 
 /* Signal Generation ------------------------------------------------------- */
 /**
@@ -51,7 +48,6 @@ float signal_high_freq(float t) {
 }
 
 
-
 /* Sampling Functions ------------------------------------------------------ */
 /**
  * @brief Sample a signal function at specified rate
@@ -61,7 +57,7 @@ float signal_high_freq(float t) {
  * @return Sampled value at time t = index/sample_rate
  */
 float sample_signal(signal_function sig_func, int index, int sample_rate) {
-    const float t = (float)index / sample_rate;
+    float t = (float)index / sample_rate;
     return sig_func(t);
 }
 
@@ -71,9 +67,16 @@ float sample_signal(signal_function sig_func, int index, int sample_rate) {
  * @param num_samples Number of samples to acquire
  */
 void fft_process_signal(signal_function sig_func,int num_samples) {
+    for( int i= 0; i< num_samples;i++){
+        g_samples_real[i] = 0;
+        g_samples_imag[i] = 0;
+    }
     for (int i = 0; i < num_samples; i++) {
         g_samples_real[i] = sample_signal(sig_func, i, g_sampling_frequency);
-        vTaskDelay(pdMS_TO_TICKS(1000/g_sampling_frequency));
+        //Serial.printf("[FFT] %.2f \n",g_samples_real[i]);
+        uart_wait_tx_idle_polling((uart_port_t)CONFIG_ESP_CONSOLE_UART_NUM);
+        esp_sleep_enable_timer_wakeup(1000*1000*1/g_sampling_frequency);
+        esp_light_sleep_start();
     }
 }
 
@@ -86,10 +89,16 @@ void fft_process_signal(signal_function sig_func,int num_samples) {
  * 3. Complex-to-magnitude conversion
  * @note Results stored in module buffers
  */
-void fft_perform_analysis(void) {
+float fft_perform_analysis(void) {
+    ArduinoFFT<float> FFT = ArduinoFFT<float>(
+    g_samples_real, 
+    g_samples_imag, 
+    NUM_SAMPLES, 
+    g_sampling_frequency);
     FFT.windowing(FFT_WIN_TYP_HAMMING, FFT_FORWARD);
     FFT.compute(FFT_FORWARD);
     FFT.complexToMagnitude();
+    return fft_get_max_frequency();
 }
 
 /**
@@ -137,43 +146,13 @@ void fft_init(void) {
     Serial.println("[FFT] Initializing FFT module");
     
     // Initial analysis with default signal
-    fft_process_signal(curr_signal,NUM_SAMPLES);
+    fft_process_signal(signal_1,NUM_SAMPLES);
     fft_perform_analysis();
     
     // Adaptive rate adjustment
-    float peak_freq = fft_get_max_frequency();
+    const float peak_freq = fft_get_max_frequency();
     Serial.printf("[FFT] Peak frequency: %.2f Hz\n", peak_freq);
 
     fft_adjust_sampling_rate(peak_freq);
     Serial.printf("[FFT] Optimal sampling rate: %d Hz\n", g_sampling_frequency);
-}
-
-/**
- * @brief Main sampling task handler
- * @param pvParameters FreeRTOS task parameters (unused)
- * @details
- * - Generates signal samples at configured rate
- * - Pushes samples to processing queue
- * - Self-terminates after acquiring NUM_OF_SAMPLES_AGGREGATE
- * 
- * @warning Depends on initialized queue (xQueueSamples)
- */
-void fft_sampling_task(void *pvParameters) {
-    float sample = 0.0f;
-    
-    Serial.printf("[SAMPLING] Starting sampling at %d Hz\n", g_sampling_frequency);
-    Serial.println("--------------------------------");
-
-    for (int i = 0; i < NUM_OF_SAMPLES_AGGREGATE; i++) {
-        sample = sample_signal(curr_signal, i, g_sampling_frequency);
-        
-        xQueueSend(xQueueSamples, &sample, 0);
-
-        Serial.printf("[SAMPLING] Sample %d: %.2f\n", i, sample);
-        vTaskDelay(pdMS_TO_TICKS(1000/g_sampling_frequency));
-    }
-
-    Serial.println("--------------------------------");
-    Serial.println("[SAMPLING] Sampling completed");
-    vTaskDelete(NULL);
 }

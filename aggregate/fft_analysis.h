@@ -14,9 +14,10 @@ extern ArduinoFFT<float> FFT;
 
 // Signal type
 typedef float (*signal_function)(float t);
+
 extern signal_function curr_signal;
+
 // Public API
-float signal_1(float t);
 float signal_medium_freq(float t);
 float signal_low_freq(float t);
 float signal_high_freq(float t);
