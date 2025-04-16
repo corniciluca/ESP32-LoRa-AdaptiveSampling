@@ -8,7 +8,6 @@
 // Configuration Constants
 #define TASK_STACK_SIZE      4096    // Bytes per task stack
 #define SERIAL_BAUD_RATE     115200  // Serial monitor speed
-#define QUEUE_RECEIVE_DELAY  5       // ms to wait for queue items
 #define SIZE_AVG_ARRAY NUM_OF_SAMPLES_AGGREGATE-WINDOW_SIZE+1
 // Global averages storage
 float averages[SIZE_AVG_ARRAY] = {0};
