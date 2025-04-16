@@ -53,7 +53,7 @@ void end_time_comunication(){
 void print_volume_of_communication(){
     float duration_ms = finish_time - start_time;
     float duration_sec = duration_ms / 1000;
-    float total_bytes = 2*SIZE_AVG_ARRAY * sizeof(char)* MSG_BUFFER_SIZE;
+    float total_bytes = 2 * ((SIZE_AVG_ARRAY * sizeof(char) * MSG_BUFFER_SIZE) + 70 + 26);
 
     float throughput_bps = total_bytes / duration_sec;
 
