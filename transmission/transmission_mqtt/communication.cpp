@@ -115,8 +115,8 @@ void wifi_init(){
 
       case WL_CONNECTED:
         Serial.printf("[WiFi] WiFi is connected!\n");
-        gpio_deep_sleep_hold_en(); // Retain GPIO state
-        esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
+        //gpio_deep_sleep_hold_en(); // Retain GPIO state
+        //esp_wifi_set_ps(WIFI_PS_MIN_MODEM);
         // uart_wait_tx_idle_polling((uart_port_t)CONFIG_ESP_CONSOLE_UART_NUM);
         // esp_sleep_enable_timer_wakeup(1000*1000*1);
         // esp_light_sleep_start();
