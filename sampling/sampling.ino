@@ -13,7 +13,7 @@
 #define TASK_PRIORITY       2
 #define SERIAL_BAUD         115200
 
-#define AMPLITUDE_THRESHOLD_STD_DEV 3.0f
+#define THRESHOLD_STD_DEV 3.0f
 #define MIN_SAMPLES_FOR_ANOMALY 10
 #define SAMPLING_WINDOW_SIZE 10
 
@@ -46,13 +46,16 @@ bool anomaly(float sample) {
     float std_dev = sqrtf(variance);
     float diff = fabsf(sample - mean);
 
-    if(diff > (AMPLITUDE_THRESHOLD_STD_DEV * std_dev)){
+    if(diff > (THRESHOLD_STD_DEV * std_dev)){
       Serial.printf("Mean: %.2f - Variance: %2.f\n",mean,variance);
       return true;
     }
     return false;
 }
 
+/**
+ * @brief FFT and Compute optimal sampling frequency
+ */
 void optimal_sampling_freq(signal_function signal) {
     Serial.println("[FFT] Signal sampling task started");
 
@@ -73,7 +76,7 @@ void optimal_sampling_freq(signal_function signal) {
 
 void sampling_task(void *pvParameters) {
     float sample = 0.0f;
-    signal_function signal = signal_high_freq;
+    signal_function signal = signal_low_freq;
     optimal_sampling_freq(signal);
     Serial.printf("[SAMPLING] Starting sampling at %d Hz\n", g_sampling_frequency);
     Serial.println("--------------------------------");
@@ -81,14 +84,10 @@ void sampling_task(void *pvParameters) {
         for (int i = 0; i < 200; i++) {
             if (i == 100)
                 signal = signal_medium_freq;
-            if (i == 150 )
-                signal = signal_high_freq;
 
             sample = sample_signal(signal, i, g_sampling_frequency);
             Serial.printf("[SAMPLING] Sample %d: %.2f\n", i, sample);
 
-            //vTaskDelay(pdMS_TO_TICKS(1000 / g_sampling_frequency));
-        
             uart_wait_tx_idle_polling((uart_port_t)CONFIG_ESP_CONSOLE_UART_NUM);
             esp_sleep_enable_timer_wakeup(1000*1000*1/g_sampling_frequency);
             esp_light_sleep_start();
