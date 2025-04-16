@@ -79,7 +79,7 @@ void sampling_avg_task(void *args) {
   Serial.println(freq);
   Serial.println("**********************");
   for(int i=0;i < window_size;i++){
-    sample = sample_signal(signal_low_freq, i + sample_i + (freq*num_of_restarts*(appTxDutyCycle/1000)),window_size);
+    sample = sample_signal(signal_low_freq, i + sample_i + (freq*num_of_restarts*(appTxDutyCycle/1000)),freq);
     Serial.print("[SAMPLING] Sample: ");
     Serial.println(sample);
     sampleReadings[i] = sample;
