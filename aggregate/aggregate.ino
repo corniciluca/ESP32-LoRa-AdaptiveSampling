@@ -45,23 +45,36 @@ void print_averages() {
  * @warning Depends on initialized queue (xQueueSamples)
  */
 void sampling_task(void *pvParameters) {
-    float sample = 0.0f;
-    
-    Serial.printf("[SAMPLING] Starting sampling at %d Hz\n", g_sampling_frequency);
-    Serial.println("--------------------------------");
+  float sample = 0.0f;
+  long last_fft_time = millis();
+  long current_time;
 
-    for (int i = 0; i < NUM_OF_SAMPLES_AGGREGATE; i++) {
-        sample = sample_signal(curr_signal, i, g_sampling_frequency);
-        
-        xQueueSend(xQueueSamples, &sample, 0);
+  Serial.printf("[SAMPLING] Starting sampling at %d Hz\n", g_sampling_frequency);
+  Serial.println("--------------------------------");
 
-        Serial.printf("[SAMPLING] Sample %d: %.2f\n", i, sample);
-        vTaskDelay(pdMS_TO_TICKS(1000/g_sampling_frequency));
-    }
+  for (int i = 0; i < NUM_OF_SAMPLES_AGGREGATE; i++) {
+      sample = sample_signal(curr_signal, i, g_sampling_frequency);
+      
+      // Change signal at sample 20
+      if (i == 20)
+          curr_signal = signal_high_freq;
+      
+      // Check if it's time to run FFT (every 3 seconds)
+      current_time = millis();
+      if (current_time - last_fft_time > 3000) {
+          fft_init();
+          last_fft_time = current_time;
+      }
+      
+      xQueueSend(xQueueSamples, &sample, 0);
+      Serial.printf("[SAMPLING] Sample %d: %.2f\n", i, sample);
+      
+      vTaskDelay(pdMS_TO_TICKS(1000/g_sampling_frequency));
+  }
 
-    Serial.println("--------------------------------");
-    Serial.println("[SAMPLING] Sampling completed");
-    vTaskDelete(NULL);
+  Serial.println("--------------------------------");
+  Serial.println("[SAMPLING] Sampling completed");
+  vTaskDelete(NULL);
 }
 
 
@@ -86,9 +99,10 @@ void average_task(void *pvParameters) {
   int pos = 0;              // Current position in circular buffer
   int valid_samples = 0;    // Count of initialized buffer elements
 
+
   while (1) {
     if (xQueueReceive(xQueueSamples, &value, (TickType_t)portMAX_DELAY)) {
-      
+
       // Update circular buffer
       sampleReadings[pos] = value;
       pos = (pos + 1) % WINDOW_SIZE;
