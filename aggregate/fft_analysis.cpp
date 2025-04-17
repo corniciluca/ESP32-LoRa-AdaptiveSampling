@@ -71,9 +71,13 @@ float sample_signal(signal_function sig_func, int index, int sample_rate) {
  * @param num_samples Number of samples to acquire
  */
 void fft_process_signal(signal_function sig_func,int num_samples) {
+    for( int i= 0; i< num_samples;i++){
+      g_samples_real[i] = 0;
+      g_samples_imag[i] = 0;
+    }
     for (int i = 0; i < num_samples; i++) {
-        g_samples_real[i] = sample_signal(sig_func, i, g_sampling_frequency);
-        vTaskDelay(pdMS_TO_TICKS(1000/g_sampling_frequency));
+      g_samples_real[i] = sample_signal(sig_func, i, g_sampling_frequency);
+      vTaskDelay(pdMS_TO_TICKS(1000/g_sampling_frequency));
     }
 }
 
@@ -135,6 +139,8 @@ void fft_adjust_sampling_rate(float max_freq) {
  */
 void fft_init(void) {
     Serial.println("[FFT] Initializing FFT module");
+    
+    g_sampling_frequency = INIT_SAMPLE_RATE;
     
     // Initial analysis with default signal
     fft_process_signal(curr_signal,NUM_SAMPLES);
