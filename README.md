@@ -557,12 +557,7 @@ Adaptive sampling adds complexity and FFT processing overhead but can offer subs
           Sketch > Include Library > ESP32_General_Libraries
           ```
           
-   * #### Method 2: Manual Library Installation
-     **For developers/modifiers or custom setups**  
-     This method is ideal if you:  
-     - Plan to modify the library code  
-     - Need to place files in non-standard locations  
-     - Want direct control over library files    
+   * #### Method 2: Manual Library Installation   
 
      **Step 1: Clone the Repository**
      
@@ -577,11 +572,11 @@ Adaptive sampling adds complexity and FFT processing overhead but can offer subs
      tar -xf ESP32_General_Libraries.zip -C output_folder
      ```
      
-     **Step 3: Copy the libraries into your personal project**
+     **Step 3: Copy the libraries into project**
 
      ```bash
-     cp ESP32-LoRa-AdaptiveSampling/lib/src/*.h YourProjectName/src/
-     cp ESP32-LoRa-AdaptiveSampling/lib/src/*.cpp YourProjectName/src/
+     cp ESP32-LoRa-AdaptiveSampling/lib/src/*.h ProjectName/src/
+     cp ESP32-LoRa-AdaptiveSampling/lib/src/*.cpp ProjectName/src/
      ```
      
 5. #### Configuration of secrets.h & config.h:
