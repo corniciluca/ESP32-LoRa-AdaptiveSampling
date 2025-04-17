@@ -164,8 +164,15 @@ To resolve these trade-offs, this phase focuses on computing the **optimal sampl
 ### Phase 3: Compute aggregates values
 
 In this phase, we aggregate the samples of the signal by computing an average of the last 5 samples using a rolling average over a 5-samples window. The implementation is done using tools given by **FreeRTOS** with the _goal_ of **parallelism** and so **efficency**. 
+In this case, instead of using an anomaly detection method,i introduce a **timer** to **recompute the FFT** every **3 seconds** and i also change the input signal after 20 samples.
 
 **Implementation:**
+
+
+**Schema of tasks**
+
+![Editor _ Mermaid Chart-2025-04-17-083414](https://github.com/user-attachments/assets/bc13968a-9593-44c6-b433-20cf9e29f602)
+
 
 - **Sampling task:** This task will sample the signal using the optimal frequency and each sample will be added to **xQueue_samples**, a mechanism used for inter-task communication that allows tasks to send and receive data in a thread-safe manner, ensuring synchronization between tasks. This task will have the highest priority, otherwise the FreeRTOS scheduler could decide to schedule the **averaging task** and this could interfere with the chosen sampling frequency.
 - **Averaging task:** This task will read the samples from **xQueue_samples** and compute the rolling average. To do so it uses a circular buffer of size 5, that each time recive a new sample it will compute the respective average.
